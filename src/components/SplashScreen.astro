@@ -1,0 +1,95 @@
+---
+import { SITE } from '../config/site';
+
+interface Props {
+  /** ID elemen utama yang akan ditampilkan setelah splash selesai */
+  revealId: string;
+  /** Durasi splash tampil dalam milidetik (default: 2000) */
+  duration?: number;
+}
+
+const { revealId, duration = 2000 } = Astro.props;
+---
+
+<!-- SPLASH SCREEN -->
+<div id="splash" aria-hidden="true" data-reveal={revealId} data-duration={duration}>
+  <img src={SITE.logo} alt={SITE.company} class="splash-logo" />
+  <div class="splash-divider"></div>
+  <p class="splash-welcome">Selamat Datang di</p>
+  <p class="splash-name">{SITE.company}</p>
+</div>
+
+<style>
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    animation: splash-fade-in 0.4s ease both;
+  }
+  @keyframes splash-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  .splash-logo {
+    height: 72px;
+    object-fit: contain;
+    animation: splash-up 0.5s ease 0.1s both;
+  }
+  .splash-divider {
+    width: 32px;
+    height: 2px;
+    background: var(--color-primary);
+    border-radius: 99px;
+    animation: splash-up 0.5s ease 0.2s both;
+  }
+  .splash-welcome {
+    font-size: 13px;
+    font-weight: 500;
+    color: #94a3b8;
+    letter-spacing: 0.3px;
+    animation: splash-up 0.5s ease 0.25s both;
+  }
+  .splash-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    text-align: center;
+    line-height: 1.5;
+    max-width: 240px;
+    animation: splash-up 0.5s ease 0.35s both;
+  }
+  @keyframes splash-up {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  #splash.exit {
+    animation: splash-out 0.35s ease forwards;
+  }
+  @keyframes splash-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+</style>
+
+<script>
+  const splash   = document.getElementById('splash')!;
+  const revealId = splash.dataset.reveal!;
+  const duration = Number(splash.dataset.duration ?? 2000);
+  const target   = document.getElementById(revealId)!;
+
+  setTimeout(() => {
+    splash.classList.add('exit');
+    setTimeout(() => {
+      splash.style.display = 'none';
+      target.classList.add('visible');
+    }, 350);
+  }, duration);
+</script>

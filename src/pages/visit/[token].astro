@@ -1,179 +1,221 @@
 ---
+/**
+ * Halaman formulir buku tamu.
+ * Diakses user setelah scan QR Code dengan URL: /visit/<token>
+ *
+ * Alur:
+ * 1. Token diambil dari URL params
+ * 2. (TODO) Validasi token ke backend — aktifkan saat backend siap
+ * 3. Splash screen tampil 2 detik, lalu form muncul
+ * 4. User mengisi form dan submit ke POST /api/guest
+ */
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import SplashScreen from '../../components/SplashScreen.astro';
 import { SITE } from '../../config/site';
 
 const { token } = Astro.params;
 
+// Redirect jika token tidak ada di URL
 if (!token) {
-  return Astro.redirect('/invalid');
+  return Astro.redirect('/invalid?reason=invalid');
 }
 
-// TODO: Validasi token ke backend
-// const API_BASE = import.meta.env.PUBLIC_API_BASE_URL;
-// const res = await fetch(`${API_BASE}/api/token/validate`, { ... });
-// const data = await res.json();
-// if (data.status !== 'valid') return Astro.redirect('/invalid');
+/**
+ * TODO: Aktifkan validasi token ke backend sebelum production.
+ *
+ * const API_BASE = import.meta.env.PUBLIC_API_BASE_URL;
+ * const res  = await fetch(`${API_BASE}/api/token/validate`, {
+ *   method:  'POST',
+ *   headers: { 'Content-Type': 'application/json' },
+ *   body:    JSON.stringify({ token }),
+ * });
+ * if (!res.ok) return Astro.redirect('/invalid?reason=invalid');
+ * const { status } = await res.json();
+ * if (status === 'expired')  return Astro.redirect('/invalid?reason=expired');
+ * if (status === 'used')     return Astro.redirect('/invalid?reason=used');
+ * if (status !== 'valid')    return Astro.redirect('/invalid?reason=invalid');
+ */
 ---
 
 <BaseLayout
   title="Buku Tamu"
   description={`Formulir buku tamu digital ${SITE.company}. Isi data kunjungan Anda.`}
-  bodyClass="min-h-screen bg-[#f8fafc] px-4 py-10"
+  bodyClass="min-h-screen bg-[#f8fafc]"
 >
-  <main class="w-full max-w-[480px] mx-auto">
+  <!--
+    Simpan konfigurasi server (timezone, locale) ke data-attribute
+    agar script client bisa pakai nilai yang sama seperti site.ts
+    tanpa perlu di-hardcode ulang.
+  -->
+  <meta
+    slot="head"
+    id="app-config"
+    data-tz={SITE.timezone}
+    data-tz-label={SITE.timezoneLabel}
+    data-locale={SITE.locale}
+  />
+  <style slot="head">
+    /* Sembunyikan konten form sampai splash selesai */
+    #main-content {
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      padding: 2.5rem 1rem;
+    }
+    #main-content.visible { opacity: 1; }
+  </style>
 
-    <!-- Header -->
-    <div class="mb-7 text-center">
-      <img src={SITE.logo} alt={SITE.company} class="h-12 mx-auto object-contain mb-4" />
-      <h1 class="text-xl font-bold text-slate-900 tracking-tight">Buku Tamu</h1>
-      <p class="text-xs font-semibold text-slate-500 mt-0.5 tracking-wide">{SITE.company}</p>
-      <p class="text-sm text-slate-400 mt-1.5">Mohon isi formulir berikut dengan lengkap</p>
-    </div>
+  <!-- Splash screen: tampil 2 detik lalu reveal #main-content -->
+  <SplashScreen revealId="main-content" />
 
-    <!-- Form Card -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-      <!-- Top accent bar -->
-      <div class="h-1 bg-primary w-full"></div>
+  <!-- ─── MAIN FORM ──────────────────────────────────────────── -->
+  <div id="main-content">
+    <main class="w-full max-w-[480px] mx-auto">
 
-      <form id="guest-form" data-token={token} class="flex flex-col gap-5 p-6" novalidate>
+      <!-- Header -->
+      <div class="mb-7 text-center">
+        <img src={SITE.logo} alt={SITE.company} class="h-12 mx-auto object-contain mb-4" />
+        <h1 class="text-xl font-bold text-slate-900 tracking-tight">Buku Tamu</h1>
+        <p class="text-xs font-semibold text-slate-500 mt-0.5 tracking-wide">{SITE.company}</p>
+        <p class="text-sm text-slate-400 mt-1.5">Mohon isi formulir berikut dengan lengkap</p>
+      </div>
 
-        <!-- Jenis Kunjungan -->
-        <div class="flex flex-col gap-2">
-          <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Jenis Kunjungan <span class="text-red-400">*</span>
-          </label>
-          <div class="grid grid-cols-2 gap-2.5">
-            <label class="flex items-center gap-2.5 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer transition-all has-[:checked]:border-primary has-[:checked]:bg-primary-light has-[:checked]:shadow-sm">
-              <input type="radio" name="jenisKunjungan" value="personal" class="accent-primary" checked />
-              <div>
-                <p class="text-sm font-semibold text-slate-800">Personal</p>
-                <p class="text-xs text-slate-400">1 orang</p>
-              </div>
+      <!-- Form Card -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <!-- Accent bar atas -->
+        <div class="h-1 bg-primary w-full"></div>
+
+        <form id="guest-form" data-token={token} class="flex flex-col gap-5 p-6" novalidate>
+
+          <!-- 1. Jenis Kunjungan -->
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Jenis Kunjungan <span class="text-red-400">*</span>
             </label>
-            <label class="flex items-center gap-2.5 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer transition-all has-[:checked]:border-primary has-[:checked]:bg-primary-light has-[:checked]:shadow-sm">
-              <input type="radio" name="jenisKunjungan" value="rombongan" class="accent-primary" />
-              <div>
-                <p class="text-sm font-semibold text-slate-800">Rombongan</p>
-                <p class="text-xs text-slate-400">Perwakilan</p>
-              </div>
-            </label>
+            <div class="grid grid-cols-2 gap-2.5">
+              <!-- Personal -->
+              <label class="flex items-center gap-2.5 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer transition-all has-[:checked]:border-primary has-[:checked]:bg-primary-light has-[:checked]:shadow-sm">
+                <input type="radio" name="jenisKunjungan" value="personal" class="accent-primary" checked />
+                <div>
+                  <p class="text-sm font-semibold text-slate-800">Personal</p>
+                  <p class="text-xs text-slate-400">1 orang</p>
+                </div>
+              </label>
+              <!-- Rombongan -->
+              <label class="flex items-center gap-2.5 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer transition-all has-[:checked]:border-primary has-[:checked]:bg-primary-light has-[:checked]:shadow-sm">
+                <input type="radio" name="jenisKunjungan" value="rombongan" class="accent-primary" />
+                <div>
+                  <p class="text-sm font-semibold text-slate-800">Rombongan</p>
+                  <p class="text-xs text-slate-400">Perwakilan</p>
+                </div>
+              </label>
+            </div>
+            <!-- Info rombongan — muncul saat radio "rombongan" dipilih -->
+            <div id="info-rombongan" class="hidden bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 text-xs text-amber-700 flex items-start gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
+              </svg>
+              <span>Untuk rombongan, cukup satu orang yang mengisi sebagai perwakilan.</span>
+            </div>
           </div>
-          <!-- Info rombongan -->
-          <div id="info-rombongan" class="hidden bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 text-xs text-amber-700 flex items-start gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
-            </svg>
-            <span>Untuk rombongan, cukup satu orang yang mengisi sebagai perwakilan.</span>
-          </div>
-        </div>
 
-        <!-- Divider -->
-        <div class="border-t border-slate-100"></div>
+          <div class="border-t border-slate-100"></div>
 
-        <!-- Tanggal & Waktu (auto-fill, read-only) -->
-        <div class="flex gap-3">
-          <div class="flex flex-col gap-1.5 flex-1">
+          <!-- 2. Waktu Kunjungan (otomatis, tidak bisa diubah user) -->
+          <div class="flex flex-col gap-1.5">
             <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              Tanggal
+              Waktu Kunjungan
             </label>
-            <input id="tanggalKunjungan" name="tanggalKunjungan" type="text" disabled
-              class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-400 bg-slate-50 cursor-not-allowed" />
-          </div>
-          <div class="flex flex-col gap-1.5 flex-1">
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Waktu
-            </label>
+            <!-- Tampilan gabungan: "Selasa, 3 Maret 2026 — 10.00 WIB" -->
             <input id="waktuKunjungan" name="waktuKunjungan" type="text" disabled
               class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-400 bg-slate-50 cursor-not-allowed" />
+            <!-- Timestamp ISO 8601 yang dikirim ke API -->
+            <input type="hidden" id="timestampKunjungan" name="timestampKunjungan" />
           </div>
-        </div>
-        <input type="hidden" id="timestampKunjungan" name="timestampKunjungan" />
 
-        <!-- Divider -->
-        <div class="border-t border-slate-100"></div>
+          <div class="border-t border-slate-100"></div>
 
-        <!-- Nama Lengkap -->
-        <div class="flex flex-col gap-1.5">
-          <label for="namaLengkap" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Nama Lengkap <span class="text-red-400">*</span>
-          </label>
-          <input id="namaLengkap" name="namaLengkap" type="text" placeholder="Contoh: Budi Santoso"
-            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-          <p id="error-namaLengkap" class="text-xs text-red-500 hidden"></p>
-        </div>
+          <!-- 3. Data pengunjung -->
 
-        <!-- Nomor HP -->
-        <div class="flex flex-col gap-1.5">
-          <label for="nomorHP" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Nomor HP <span class="text-red-400">*</span>
-          </label>
-          <input id="nomorHP" name="nomorHP" type="tel" placeholder="Contoh: 08123456789"
-            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-          <p id="error-nomorHP" class="text-xs text-red-500 hidden"></p>
-        </div>
+          <!-- Nama Lengkap -->
+          <div class="flex flex-col gap-1.5">
+            <label for="namaLengkap" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Nama Lengkap <span class="text-red-400">*</span>
+            </label>
+            <input id="namaLengkap" name="namaLengkap" type="text" placeholder="Contoh: Budi Santoso"
+              class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+            <p id="error-namaLengkap" class="text-xs text-red-500 hidden"></p>
+          </div>
 
-        <!-- Instansi -->
-        <div class="flex flex-col gap-1.5">
-          <label for="instansi" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Instansi / Perusahaan <span class="text-red-400">*</span>
-          </label>
-          <input id="instansi" name="instansi" type="text" placeholder="Contoh: PT Maju Bersama"
-            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-          <p id="error-instansi" class="text-xs text-red-500 hidden"></p>
-        </div>
+          <!-- Nomor HP -->
+          <div class="flex flex-col gap-1.5">
+            <label for="nomorHP" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Nomor HP <span class="text-red-400">*</span>
+            </label>
+            <input id="nomorHP" name="nomorHP" type="tel" placeholder="Contoh: 08123456789"
+              class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+            <p id="error-nomorHP" class="text-xs text-red-500 hidden"></p>
+          </div>
 
-        <!-- Keperluan -->
-        <div class="flex flex-col gap-1.5">
-          <label for="keperluan" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Keperluan <span class="text-red-400">*</span>
-          </label>
-          <input id="keperluan" name="keperluan" type="text" placeholder="Contoh: Rapat, Presentasi, dll."
-            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-          <p id="error-keperluan" class="text-xs text-red-500 hidden"></p>
-        </div>
+          <!-- Instansi / Perusahaan -->
+          <div class="flex flex-col gap-1.5">
+            <label for="instansi" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Instansi / Perusahaan <span class="text-red-400">*</span>
+            </label>
+            <input id="instansi" name="instansi" type="text" placeholder="Contoh: PT Maju Bersama"
+              class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+            <p id="error-instansi" class="text-xs text-red-500 hidden"></p>
+          </div>
 
-        <!-- Bertemu Dengan -->
-        <div class="flex flex-col gap-1.5">
-          <label for="bertemuDengan" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Bertemu Dengan <span class="text-red-400">*</span>
-          </label>
-          <input id="bertemuDengan" name="bertemuDengan" type="text" placeholder="Contoh: Bapak Andi (Marketing)"
-            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-          <p id="error-bertemuDengan" class="text-xs text-red-500 hidden"></p>
-        </div>
+          <!-- Keperluan -->
+          <div class="flex flex-col gap-1.5">
+            <label for="keperluan" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Keperluan <span class="text-red-400">*</span>
+            </label>
+            <input id="keperluan" name="keperluan" type="text" placeholder="Contoh: Rapat, Presentasi, dll."
+              class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+            <p id="error-keperluan" class="text-xs text-red-500 hidden"></p>
+          </div>
 
-        <!-- Plat Nomor -->
-        <div class="flex flex-col gap-1.5">
-          <label for="platNomor" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Plat Nomor Kendaraan <span class="text-red-400">*</span>
-          </label>
-          <input id="platNomor" name="platNomor" type="text" placeholder="Contoh: B 1234 ABC"
-            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 uppercase focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
-          <p id="error-platNomor" class="text-xs text-red-500 hidden"></p>
-        </div>
+          <!-- Bertemu Dengan -->
+          <div class="flex flex-col gap-1.5">
+            <label for="bertemuDengan" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Bertemu Dengan <span class="text-red-400">*</span>
+            </label>
+            <input id="bertemuDengan" name="bertemuDengan" type="text" placeholder="Contoh: Bapak Andi (Marketing)"
+              class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+            <p id="error-bertemuDengan" class="text-xs text-red-500 hidden"></p>
+          </div>
 
-        <!-- Submit -->
-        <button id="submit-btn" type="submit"
-          class="w-full h-12 bg-primary text-white font-semibold rounded-xl transition-all hover:bg-primary-dark active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-sm tracking-wide mt-1">
-          Kirim Data
-        </button>
+          <!-- Plat Nomor Kendaraan -->
+          <div class="flex flex-col gap-1.5">
+            <label for="platNomor" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              Plat Nomor Kendaraan <span class="text-red-400">*</span>
+            </label>
+            <input id="platNomor" name="platNomor" type="text" placeholder="Contoh: B 1234 ABC"
+              class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 uppercase focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+            <p id="error-platNomor" class="text-xs text-red-500 hidden"></p>
+          </div>
 
-      </form>
-    </div>
+          <!-- Tombol Submit -->
+          <button id="submit-btn" type="submit"
+            class="w-full h-12 bg-primary text-white font-semibold rounded-xl transition-all hover:bg-primary-dark active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-sm tracking-wide mt-1">
+            Kirim Data
+          </button>
 
-    <p class="text-xs text-center text-slate-400 mt-5">
-      Data Anda tersimpan dengan aman dan hanya digunakan untuk keperluan kunjungan.
-    </p>
+        </form>
+      </div>
 
-  </main>
+      <p class="text-xs text-center text-slate-400 mt-5">
+        Data Anda tersimpan dengan aman dan hanya digunakan untuk keperluan kunjungan.
+      </p>
 
-  <!-- Inline Toast -->
+    </main>
+  </div><!-- /#main-content -->
+
+  <!-- Toast Notification — muncul jika ada error submit -->
   <div id="toast" role="alert" aria-live="assertive"
     class="hidden fixed bottom-6 left-4 right-4 max-w-[480px] mx-auto rounded-xl px-4 py-3 shadow-lg z-50 flex items-center gap-3 text-sm font-medium">
     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -185,15 +227,24 @@ if (!token) {
 </BaseLayout>
 
 <script>
-  const TZ     = 'Asia/Jakarta';
-  const TZ_LBL = 'WIB';
-  const LOCALE = 'id-ID';
+  /**
+   * Script form page — satu blok, terorganisir per section.
+   *
+   * Timezone & locale dibaca dari <meta id="app-config"> yang diisi
+   * server (Astro frontmatter) agar sinkron dengan site.ts tanpa hardcode.
+   */
 
+  // ─── Config (dari server via meta tag) ────────────────────────
+  const cfg    = document.getElementById('app-config') as HTMLMetaElement;
+  const TZ     = cfg?.dataset.tz     ?? 'Asia/Jakarta';
+  const TZ_LBL = cfg?.dataset.tzLabel ?? 'WIB';
+  const LOCALE = cfg?.dataset.locale  ?? 'id-ID';
+
+  // ─── DOM references ───────────────────────────────────────────
   const form       = document.getElementById('guest-form')         as HTMLFormElement;
   const submitBtn  = document.getElementById('submit-btn')         as HTMLButtonElement;
   const infoRombo  = document.getElementById('info-rombongan')     as HTMLDivElement;
   const radioGroup = document.querySelectorAll<HTMLInputElement>('input[name="jenisKunjungan"]');
-  const tanggalEl  = document.getElementById('tanggalKunjungan')   as HTMLInputElement;
   const waktuEl    = document.getElementById('waktuKunjungan')     as HTMLInputElement;
   const tsEl       = document.getElementById('timestampKunjungan') as HTMLInputElement;
   const toastEl    = document.getElementById('toast')              as HTMLDivElement;
@@ -202,7 +253,7 @@ if (!token) {
   let isSubmitting = false;
   let toastTimer: ReturnType<typeof setTimeout>;
 
-  // ─── Toast ───────────────────────────────────────────────────
+  // ─── Toast notification ───────────────────────────────────────
   function showToast(message: string, type: 'error' | 'success' = 'error') {
     clearTimeout(toastTimer);
     toastMsg.textContent = message;
@@ -211,24 +262,25 @@ if (!token) {
     toastTimer = setTimeout(() => toastEl.classList.add('hidden'), 4000);
   }
 
-  // ─── Auto-fill datetime ───────────────────────────────────────
+  // ─── Auto-fill waktu kunjungan ────────────────────────────────
   function fillDatetime() {
-    const now = new Date();
-    tanggalEl.value = now.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: TZ });
-    waktuEl.value   = now.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit', timeZone: TZ }) + ` ${TZ_LBL}`;
-    tsEl.value      = now.toISOString();
+    const now     = new Date();
+    const tanggal = now.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: TZ });
+    const waktu   = now.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit', timeZone: TZ });
+    waktuEl.value = `${tanggal} — ${waktu} ${TZ_LBL}`;
+    tsEl.value    = now.toISOString();
   }
   fillDatetime();
-  setInterval(fillDatetime, 60_000);
+  setInterval(fillDatetime, 60_000); // update setiap menit
 
-  // ─── Toggle rombongan info ────────────────────────────────────
+  // ─── Toggle info rombongan ────────────────────────────────────
   radioGroup.forEach(radio => {
     radio.addEventListener('change', () => {
       infoRombo.classList.toggle('hidden', radio.value !== 'rombongan' || !radio.checked);
     });
   });
 
-  // ─── Validation ──────────────────────────────────────────────
+  // ─── Validasi field ───────────────────────────────────────────
   function showError(fieldId: string, message: string) {
     const el    = document.getElementById(`error-${fieldId}`);
     const input = document.getElementById(fieldId) as HTMLInputElement | null;
@@ -245,13 +297,14 @@ if (!token) {
 
   function validate(data: Record<string, string>): boolean {
     let valid = true;
+    // Tambah field baru cukup di sini — format: [id, validator, pesan error]
     const rules: Array<[string, (v: string) => boolean, string]> = [
-      ['namaLengkap',   v => v.length >= 3,              'Nama lengkap minimal 3 karakter.'],
-      ['nomorHP',       v => /^[0-9]{10,15}$/.test(v),   'Nomor HP harus angka, 10–15 digit.'],
-      ['instansi',      v => v.length > 0,               'Instansi / perusahaan wajib diisi.'],
-      ['keperluan',     v => v.length > 0,               'Keperluan wajib diisi.'],
-      ['bertemuDengan', v => v.length > 0,               'Nama yang akan ditemui wajib diisi.'],
-      ['platNomor',     v => v.length > 0,               'Plat nomor kendaraan wajib diisi.'],
+      ['namaLengkap',   v => v.length >= 3,             'Nama lengkap minimal 3 karakter.'],
+      ['nomorHP',       v => /^[0-9]{10,15}$/.test(v),  'Nomor HP harus angka, 10–15 digit.'],
+      ['instansi',      v => v.length > 0,              'Instansi / perusahaan wajib diisi.'],
+      ['keperluan',     v => v.length > 0,              'Keperluan wajib diisi.'],
+      ['bertemuDengan', v => v.length > 0,              'Nama yang akan ditemui wajib diisi.'],
+      ['platNomor',     v => v.length > 0,              'Plat nomor kendaraan wajib diisi.'],
     ];
     for (const [field, test, msg] of rules) {
       if (!test(data[field] ?? '')) { showError(field, msg); valid = false; }
@@ -260,7 +313,7 @@ if (!token) {
     return valid;
   }
 
-  // ─── Submit ───────────────────────────────────────────────────
+  // ─── Submit form ke API ───────────────────────────────────────
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
@@ -269,7 +322,7 @@ if (!token) {
     const formData = new FormData(form);
     const str      = (key: string) => (formData.get(key) as string ?? '').trim();
 
-    const data: Record<string, string> = {
+    const payload: Record<string, string> = {
       jenisKunjungan: str('jenisKunjungan') || 'personal',
       namaLengkap:    str('namaLengkap'),
       nomorHP:        str('nomorHP'),
@@ -277,11 +330,12 @@ if (!token) {
       keperluan:      str('keperluan'),
       bertemuDengan:  str('bertemuDengan'),
       platNomor:      str('platNomor').toUpperCase(),
-      waktuKunjungan: str('timestampKunjungan'),
+      waktuKunjungan: str('timestampKunjungan'), // ISO 8601
     };
 
-    if (!validate(data)) return;
+    if (!validate(payload)) return;
 
+    // Nonaktifkan tombol selama proses kirim
     isSubmitting = true;
     submitBtn.disabled = true;
     submitBtn.textContent = 'Mengirim...';
@@ -289,9 +343,9 @@ if (!token) {
     try {
       const API_BASE = import.meta.env.PUBLIC_API_BASE_URL ?? '';
       const res = await fetch(`${API_BASE}/api/guest`, {
-        method: 'POST',
+        method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, ...data }),
+        body:    JSON.stringify({ token, ...payload }),
       });
 
       if (res.ok) {
