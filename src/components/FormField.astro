@@ -1,0 +1,90 @@
+---
+/**
+ * Komponen input field yang reusable untuk form buku tamu.
+ *
+ * Mendukung dua mode:
+ * - Normal   : field yang bisa diisi user (required, validasi, error message)
+ * - Disabled : field auto-fill read-only (tampilkan icon, tidak ada error)
+ *
+ * Contoh pemakaian:
+ * <FormField id="namaLengkap" label="Nama Lengkap" placeholder="Budi Santoso" required />
+ * <FormField id="waktuKunjungan" label="Waktu Kunjungan" disabled icon="calendar" />
+ */
+
+interface Props {
+  /** ID unik field — digunakan untuk id, name, aria, dan error element */
+  id: string;
+  /** Label yang tampil di atas input */
+  label: string;
+  /** Tipe input HTML (default: "text") */
+  type?: 'text' | 'tel' | 'email' | 'number';
+  /** Placeholder teks saat field kosong */
+  placeholder?: string;
+  /** Tampilkan tanda bintang merah (*) dan aktifkan error paragraph */
+  required?: boolean;
+  /** Jadikan field readonly (auto-fill). Icon otomatis muncul di label jika diset */
+  disabled?: boolean;
+  /** Paksa teks jadi uppercase (berguna untuk plat nomor) */
+  uppercase?: boolean;
+  /** Icon di sebelah kiri label saat mode disabled. Nilai: "calendar" | "clock" */
+  icon?: 'calendar' | 'clock';
+}
+
+const {
+  id,
+  label,
+  type        = 'text',
+  placeholder = '',
+  required    = false,
+  disabled    = false,
+  uppercase   = false,
+  icon,
+} = Astro.props;
+
+// Class input berubah tergantung mode normal vs disabled
+const inputClass = disabled
+  ? 'w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-400 bg-slate-50 cursor-not-allowed'
+  : [
+      'w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800',
+      'placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30',
+      'focus:border-primary transition-all',
+      uppercase ? 'uppercase' : '',
+    ].join(' ');
+---
+
+<div class="flex flex-col gap-1.5">
+  <label
+    for={id}
+    class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5"
+  >
+    <!-- Icon opsional di label (hanya untuk mode disabled) -->
+    {icon === 'calendar' && (
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+      </svg>
+    )}
+    {icon === 'clock' && (
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    )}
+
+    {label}
+    {required && <span class="text-red-400">*</span>}
+  </label>
+
+  <input
+    {id}
+    name={id}
+    type={type}
+    placeholder={placeholder}
+    disabled={disabled}
+    class={inputClass}
+    autocomplete="off"
+  />
+
+  <!-- Error message — hanya muncul pada field normal (required) -->
+  {!disabled && (
+    <p id={`error-${id}`} class="text-xs text-red-500 hidden" aria-live="polite"></p>
+  )}
+</div>
