@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../config/site';
+import { Image } from 'astro:assets';
+import logoImage from '../assets/logo.png';
 ---
 
 <BaseLayout
@@ -12,7 +14,7 @@ import { SITE } from '../config/site';
 
     <!-- Header -->
     <div class="text-center mb-8">
-      <img src={SITE.logo} alt={SITE.company} class="h-24 mx-auto object-contain mb-5" />
+      <Image src={logoImage} alt={SITE.company} class="h-24 mx-auto object-contain mb-5" />
       <h1 class="text-2xl font-bold text-slate-900 tracking-tight">{SITE.appName}</h1>
       <p class="text-sm text-slate-500 mt-1 font-medium">{SITE.company}</p>
     </div>

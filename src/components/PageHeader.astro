@@ -1,5 +1,7 @@
 ---
 import { SITE } from '../config/site';
+import { Image } from 'astro:assets';
+import logoImage from '../assets/logo.png';
 
 interface Props {
   title: string;
@@ -18,8 +20,8 @@ const { title, description } = Astro.props;
     <!-- Logo Container -->
     <div class="shrink-0">
       <div class="w-14 h-14 flex items-center justify-center">
-        <img
-          src={SITE.logo}
+        <Image
+          src={logoImage}
           alt={SITE.company}
           class="w-full h-full object-contain"
           loading="eager"
