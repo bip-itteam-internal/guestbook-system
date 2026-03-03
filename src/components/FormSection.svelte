@@ -1,13 +1,6 @@
----
-/**
- * Komponen pembungkus section form dengan header indikator hijau.
- */
-interface Props {
-  title: string;
-}
-
-const { title } = Astro.props;
----
+<script lang="ts">
+  export let title: string;
+</script>
 
 <section class="space-y-4">
   <div class="flex items-center gap-2">

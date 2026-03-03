@@ -11,10 +11,8 @@
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SplashScreen from '../../components/SplashScreen.astro';
-import FormField from '../../components/FormField.astro';
 import PageHeader from '../../components/PageHeader.astro';
-import FormSection from '../../components/FormSection.astro';
-import VisitTypeSelector from '../../components/VisitTypeSelector.svelte';
+import GuestForm from '../../components/GuestForm.svelte';
 import { SITE } from '../../config/site';
 
 const { token } = Astro.params;
@@ -30,11 +28,6 @@ if (!token) {
   description={`Formulir buku tamu digital ${SITE.company}. Isi data kunjungan Anda.`}
   bodyClass='min-h-screen bg-[#f8fafc]'
 >
-  <!--
-    Simpan konfigurasi server (timezone, locale) ke data-attribute
-    agar script client bisa pakai nilai yang sama seperti site.ts
-    tanpa perlu di-hardcode ulang.
-  -->
   <meta
     slot='head'
     id='app-config'
@@ -42,92 +35,14 @@ if (!token) {
     data-tz-label={SITE.timezoneLabel}
     data-locale={SITE.locale}
   />
-  <!-- Splash screen: tampil 2 detik lalu reveal #main-content -->
   <SplashScreen revealId='main-content' />
 
-  <!-- ─── MAIN FORM ──────────────────────────────────────────── -->
   <div id='main-content' class='opacity-0 transition-opacity duration-400 ease-out pt-6 px-4 pb-24'>
     <main class='w-full max-w-[480px] mx-auto'>
-      <!-- Form Card (header + form dalam satu card) -->
       <div class='bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden'>
-        <!-- Header di bagian atas card -->
         <PageHeader title={SITE.appName} />
-
-        <form id='guest-form' data-token={token} class='flex flex-col gap-6 p-6' novalidate>
-          <!-- Section 1: Jenis Kunjungan -->
-          <FormSection title='Jenis Kunjungan'>
-            <!-- 2. Waktu Kunjungan (otomatis)
-            <FormField
-              id="waktuKunjungan"
-              label="Waktu Kunjungan"
-              disabled
-            />
-            <input type="hidden" id="timestampKunjungan" name="timestampKunjungan" /> -->
-            <VisitTypeSelector client:load />
-          </FormSection>
-
-          <!-- Section 2: Data Pengunjung -->
-          <FormSection title='Data Pengunjung'>
-            <FormField
-              id='namaLengkap'
-              label='Nama Lengkap'
-              placeholder='Contoh: Budi Santoso'
-              required
-            />
-
-            <FormField
-              id='nomorHP'
-              label='Nomor HP'
-              type='tel'
-              placeholder='Contoh: 08123456789'
-              required
-            />
-
-            <FormField
-              id='instansi'
-              label='Instansi / Perusahaan / Alamat'
-              placeholder='Contoh: PT Maju Bersama / Jl. Melati No. 1'
-              required
-            />
-
-            <FormField
-              id='platNomor'
-              label='Plat Nomor Kendaraan'
-              placeholder='Contoh: B 1234 ABC'
-              required
-              uppercase
-              helperText='Isi dengan "-" jika tidak membawa kendaraan'
-            />
-          </FormSection>
-
-          <!-- Section 3: Detail Kunjungan -->
-          <FormSection title='Detail Kunjungan'>
-            <FormField
-              id='keperluan'
-              label='Keperluan'
-              placeholder='Contoh: Rapat, Presentasi, dll.'
-              required
-            />
-
-            <FormField
-              id='bertemuDengan'
-              label='Bertemu Dengan'
-              placeholder='Contoh: Bapak Andi (Marketing)'
-              required
-            />
-          </FormSection>
-
-          <!-- Tombol Submit -->
-          <button
-            id='submit-btn'
-            type='submit'
-            class='w-full h-12 bg-primary text-white font-semibold rounded-xl transition-all hover:bg-primary-dark active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-sm tracking-wide mt-1'
-          >
-            Kirim Data
-          </button>
-        </form>
+        <GuestForm client:load {token} />
       </div>
-
       <p class='text-xs text-center text-slate-400 mt-5'>
         Data Anda tersimpan dengan aman dan hanya digunakan untuk keperluan kunjungan.
       </p>
@@ -138,182 +53,5 @@ if (!token) {
       &copy; {new Date().getFullYear()}
       {SITE.copyright}
     </p>
-  </div><!-- /#main-content -->
-
-  <!-- Toast Notification — muncul jika ada error submit -->
-  <div
-    id='toast'
-    role='alert'
-    aria-live='assertive'
-    class='hidden fixed bottom-6 left-4 right-4 max-w-[480px] mx-auto rounded-xl px-4 py-3 shadow-lg z-50 flex items-center gap-3 text-sm font-medium'
-  >
-    <svg
-      xmlns='http://www.w3.org/2000/svg'
-      class='w-5 h-5 flex-shrink-0'
-      fill='none'
-      viewBox='0 0 24 24'
-      stroke='currentColor'
-      stroke-width='2'
-    >
-      <path
-        stroke-linecap='round'
-        stroke-linejoin='round'
-        d='M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z'
-      ></path>
-    </svg>
-    <span id='toast-msg'></span>
   </div>
 </BaseLayout>
-
-<script>
-  /**
-   * Script form page — satu blok, terorganisir per section.
-   *
-   * Timezone & locale dibaca dari <meta id="app-config"> yang diisi
-   * server (Astro frontmatter) agar sinkron dengan site.ts tanpa hardcode.
-   */
-
-  // ─── Config (dari server via meta tag) ────────────────────────
-  const cfg = document.getElementById('app-config') as HTMLMetaElement;
-  const TZ = cfg?.dataset.tz ?? 'Asia/Jakarta';
-  const TZ_LBL = cfg?.dataset.tzLabel ?? 'WIB';
-  const LOCALE = cfg?.dataset.locale ?? 'id-ID';
-
-  // ─── DOM references ───────────────────────────────────────────
-  const form = document.getElementById('guest-form') as HTMLFormElement;
-  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
-  const waktuEl = document.getElementById('waktuKunjungan') as HTMLInputElement;
-  const tsEl = document.getElementById('timestampKunjungan') as HTMLInputElement;
-  const toastEl = document.getElementById('toast') as HTMLDivElement;
-  const toastMsg = document.getElementById('toast-msg') as HTMLSpanElement;
-
-  let isSubmitting = false;
-  let toastTimer: ReturnType<typeof setTimeout>;
-
-  // ─── Toast notification ───────────────────────────────────────
-  function showToast(message: string, type: 'error' | 'success' = 'error') {
-    clearTimeout(toastTimer);
-    toastMsg.textContent = message;
-    toastEl.className =
-      'fixed bottom-6 left-4 right-4 max-w-[480px] mx-auto rounded-xl px-4 py-3 shadow-lg z-50 flex items-center gap-3 text-sm font-medium';
-    toastEl.classList.add(type === 'error' ? 'bg-red-600' : 'bg-green-600', 'text-white');
-    toastTimer = setTimeout(() => toastEl.classList.add('hidden'), 4000);
-  }
-
-  // ─── Auto-fill waktu kunjungan ────────────────────────────────
-  function fillDatetime() {
-    const now = new Date();
-    const tanggal = now.toLocaleDateString(LOCALE, {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      timeZone: TZ,
-    });
-    const waktu = now.toLocaleTimeString(LOCALE, {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: TZ,
-    });
-    if (waktuEl) waktuEl.value = `${tanggal} — ${waktu} ${TZ_LBL}`;
-    if (tsEl) tsEl.value = now.toISOString();
-  }
-  fillDatetime();
-  setInterval(fillDatetime, 60_000); // update setiap menit
-
-  // ─── Validasi field ───────────────────────────────────────────
-  function showError(fieldId: string, message: string) {
-    const el = document.getElementById(`error-${fieldId}`);
-    const input = document.getElementById(fieldId) as HTMLInputElement | null;
-    if (el) {
-      el.textContent = message;
-      el.classList.remove('hidden');
-    }
-    if (input) {
-      input.classList.add('border-red-400', 'bg-red-50/30');
-    }
-  }
-
-  function clearError(fieldId: string) {
-    const el = document.getElementById(`error-${fieldId}`);
-    const input = document.getElementById(fieldId) as HTMLInputElement | null;
-    if (el) {
-      el.textContent = '';
-      el.classList.add('hidden');
-    }
-    if (input) {
-      input.classList.remove('border-red-400', 'bg-red-50/30');
-    }
-  }
-
-  function validate(data: Record<string, string>): boolean {
-    let valid = true;
-    // Tambah field baru cukup di sini — format: [id, validator, pesan error]
-    const rules: Array<[string, (v: string) => boolean, string]> = [
-      ['namaLengkap', (v) => v.length >= 3, 'Nama lengkap minimal 3 karakter.'],
-      ['nomorHP', (v) => /^[0-9]{10,15}$/.test(v), 'Nomor HP harus angka, 10–15 digit.'],
-      ['instansi', (v) => v.length > 0, 'Instansi / perusahaan / alamat wajib diisi.'],
-      ['keperluan', (v) => v.length > 0, 'Keperluan wajib diisi.'],
-      ['bertemuDengan', (v) => v.length > 0, 'Nama yang akan ditemui wajib diisi.'],
-      ['platNomor', (v) => v.length > 0, 'Plat nomor kendaraan wajib diisi.'],
-    ];
-    for (const [field, test, msg] of rules) {
-      if (!test(data[field] ?? '')) {
-        showError(field, msg);
-        valid = false;
-      } else clearError(field);
-    }
-    return valid;
-  }
-
-  // ─── Submit form ke API ───────────────────────────────────────
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (isSubmitting) return;
-
-    const token = form.dataset.token;
-    const formData = new FormData(form);
-    const str = (key: string) => ((formData.get(key) as string) ?? '').trim();
-
-    const payload: Record<string, string> = {
-      jenisKunjungan: str('jenisKunjungan') || 'personal',
-      namaLengkap: str('namaLengkap'),
-      nomorHP: str('nomorHP'),
-      instansi: str('instansi'),
-      keperluan: str('keperluan'),
-      bertemuDengan: str('bertemuDengan'),
-      platNomor: str('platNomor').toUpperCase(),
-      waktuKunjungan: str('timestampKunjungan'), // ISO 8601
-    };
-
-    if (!validate(payload)) return;
-
-    // Nonaktifkan tombol selama proses kirim
-    isSubmitting = true;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Mengirim...';
-
-    try {
-      const API_BASE = import.meta.env.PUBLIC_API_BASE_URL ?? '';
-      const res = await fetch(`${API_BASE}/api/guest`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, ...payload }),
-      });
-
-      if (res.ok) {
-        window.location.href = '/success';
-      } else {
-        showToast('Gagal mengirim data. Silakan coba lagi.');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Kirim Data';
-      }
-    } catch {
-      showToast('Terjadi kesalahan koneksi. Periksa internet Anda.');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Kirim Data';
-    } finally {
-      isSubmitting = false;
-    }
-  });
-</script>
