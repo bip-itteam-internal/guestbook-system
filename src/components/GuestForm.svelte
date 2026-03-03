@@ -81,20 +81,19 @@
 
     const payload = {
       token,
-      jenisKunjungan,
-      jumlahOrang: jenisKunjungan === "rombongan" ? parseInt(jumlahOrang, 10) : 1,
-      namaLengkap: namaLengkap.trim(),
-      nomorHP: nomorHP.trim(),
-      instansi: instansi.trim(),
-      platNomor: platNomor.trim().toUpperCase(),
-      keperluan: keperluan.trim(),
-      bertemuDengan: bertemuDengan.trim(),
-      waktuKunjungan: new Date().toISOString(),
+      category: jenisKunjungan === "rombongan" ? "group" : "personal",
+      full_name: namaLengkap.trim(),
+      phone_number: nomorHP.trim(),
+      plate_number: platNomor.trim().toUpperCase(),
+      visit_from: instansi.trim(),
+      visit_purpose: keperluan.trim(),
+      meeting_with: bertemuDengan.trim(),
+      number_of_people: jenisKunjungan === "rombongan" ? parseInt(jumlahOrang, 10) : 1,
     };
 
     try {
       const API_BASE = import.meta.env.PUBLIC_API_BASE_URL ?? "";
-      const res = await fetch(`${API_BASE}/api/guest`, {
+      const res = await fetch(`${API_BASE}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
