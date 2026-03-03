@@ -14,7 +14,7 @@ import SplashScreen from '../../components/SplashScreen.astro';
 import FormField from '../../components/FormField.astro';
 import PageHeader from '../../components/PageHeader.astro';
 import FormSection from '../../components/FormSection.astro';
-import VisitTypeSelector from '../../components/VisitTypeSelector.astro';
+import VisitTypeSelector from '../../components/VisitTypeSelector.svelte';
 import { SITE } from '../../config/site';
 
 const { token } = Astro.params;
@@ -63,7 +63,7 @@ if (!token) {
               disabled
             />
             <input type="hidden" id="timestampKunjungan" name="timestampKunjungan" /> -->
-            <VisitTypeSelector />
+            <VisitTypeSelector client:load />
           </FormSection>
 
           <!-- Section 2: Data Pengunjung -->
@@ -182,8 +182,6 @@ if (!token) {
   // ─── DOM references ───────────────────────────────────────────
   const form = document.getElementById('guest-form') as HTMLFormElement;
   const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
-  const infoRombo = document.getElementById('info-rombongan') as HTMLDivElement;
-  const radioGroup = document.querySelectorAll<HTMLInputElement>('input[name="jenisKunjungan"]');
   const waktuEl = document.getElementById('waktuKunjungan') as HTMLInputElement;
   const tsEl = document.getElementById('timestampKunjungan') as HTMLInputElement;
   const toastEl = document.getElementById('toast') as HTMLDivElement;
@@ -222,13 +220,6 @@ if (!token) {
   }
   fillDatetime();
   setInterval(fillDatetime, 60_000); // update setiap menit
-
-  // ─── Toggle info rombongan ────────────────────────────────────
-  radioGroup.forEach((radio) => {
-    radio.addEventListener('change', () => {
-      infoRombo.classList.toggle('hidden', radio.value !== 'rombongan' || !radio.checked);
-    });
-  });
 
   // ─── Validasi field ───────────────────────────────────────────
   function showError(fieldId: string, message: string) {
