@@ -1,8 +1,8 @@
 ---
 import { SITE } from '../config/site';
 import { Image } from 'astro:assets';
-import logoImage from '../assets/logo.png';
 import headerBg from '../assets/image.png';
+import LogoBox from './LogoBox.astro';
 
 interface Props {
   title: string;
@@ -29,16 +29,7 @@ const { title } = Astro.props;
     <div class='flex items-center gap-4 justify-center'>
       <!-- Logo Container with White Circle Background for legibility -->
       <div class='shrink-0'>
-        <div
-          class='w-12 h-12 bg-white/10 backdrop-blur-[2px] border border-white/20 rounded-xl flex items-center justify-center p-2 shadow-xl transition-transform hover:scale-105 duration-300'
-        >
-          <Image
-            src={logoImage}
-            alt={SITE.company}
-            class='w-full h-full object-contain'
-            loading='eager'
-          />
-        </div>
+        <LogoBox size='w-12 h-12' />
       </div>
 
       <!-- Title & Company Container -->

@@ -1,0 +1,29 @@
+---
+import { Image } from 'astro:assets';
+import { SITE } from '../config/site';
+import logoImage from '../assets/logo.png';
+
+interface Props {
+  /**
+   * Menentukan ukuran kontainer logo menggunakan utility class Tailwind (contoh: 'w-12 h-12', 'w-24 h-24').
+   * Default: 'w-12 h-12'.
+   */
+  size?: string;
+  /**
+   * Kelas CSS tambahan untuk kustomisasi lebih lanjut.
+   */
+  class?: string;
+}
+
+const { size = 'w-12 h-12', class: className = '' } = Astro.props;
+---
+
+<div
+  class:list={[
+    size,
+    'bg-white/10 backdrop-blur-[2px] border border-white/20 rounded-xl flex items-center justify-center p-2 shadow-xl transition-transform hover:scale-105 duration-300',
+    className,
+  ]}
+>
+  <Image src={logoImage} alt={SITE.company} class='w-full h-full object-contain' loading='eager' />
+</div>
