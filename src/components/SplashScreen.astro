@@ -1,5 +1,5 @@
 ---
-import LogoBox from './LogoBox.astro';
+import { SITE } from '../config/site';
 
 interface Props {
   revealId: string;
@@ -8,6 +8,7 @@ interface Props {
 
 const { revealId, duration = 2000 } = Astro.props;
 ---
+
 <div
   id='splash'
   aria-hidden='true'
@@ -15,7 +16,22 @@ const { revealId, duration = 2000 } = Astro.props;
   data-duration={duration}
   class='fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center gap-4 animate-splash-fade-in'
 >
-  <LogoBox size='w-[150px] h-[150px]' class='animate-splash-up delay-100' />
+  <div class='text-center animate-splash-up delay-100 px-6'>
+    <h1 class='text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight leading-snug'>
+      Selamat Datang di <br />
+      <span class='text-primary mt-1 inline-block'>{SITE.company}</span>
+    </h1>
+
+    <!-- Animasi titik loncat (bounce dots) -->
+    <div class='mt-6 flex items-center justify-center gap-2'>
+      <div class='w-2 h-2 rounded-full bg-primary/40 animate-bounce' style='animation-delay: 0ms'>
+      </div>
+      <div class='w-2 h-2 rounded-full bg-primary/70 animate-bounce' style='animation-delay: 150ms'>
+      </div>
+      <div class='w-2 h-2 rounded-full bg-primary animate-bounce' style='animation-delay: 300ms'>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
