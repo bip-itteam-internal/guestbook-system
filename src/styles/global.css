@@ -4,6 +4,43 @@
    --color-primary: #009e41;
    --color-primary-dark: #007d33;
    --color-primary-light: #e6f5ec;
+
+   /* ─── Splash Animations ────────────────────────── */
+   --animate-splash-fade-in: splash-fade-in 0.4s ease both;
+   --animate-splash-up: splash-up 0.5s ease both;
+   --animate-splash-out: splash-out 0.35s ease forwards;
+
+   @keyframes splash-fade-in {
+      from {
+         opacity: 0;
+      }
+
+      to {
+         opacity: 1;
+      }
+   }
+
+   @keyframes splash-up {
+      from {
+         opacity: 0;
+         transform: translateY(10px);
+      }
+
+      to {
+         opacity: 1;
+         transform: translateY(0);
+      }
+   }
+
+   @keyframes splash-out {
+      from {
+         opacity: 1;
+      }
+
+      to {
+         opacity: 0;
+      }
+   }
 }
 
 /* ─── Base typography & smoothing ─────────────────────────── */

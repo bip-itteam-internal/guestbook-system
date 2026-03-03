@@ -12,53 +12,19 @@ const { revealId, duration = 2000 } = Astro.props;
 ---
 
 <!-- SPLASH SCREEN -->
-<div id="splash" aria-hidden="true" data-reveal={revealId} data-duration={duration}>
-  <Image src={logoImage} alt={SITE.company} class="splash-logo" />
+<div 
+  id="splash" 
+  aria-hidden="true" 
+  data-reveal={revealId} 
+  data-duration={duration}
+  class="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center gap-4 animate-splash-fade-in"
+>
+  <Image 
+    src={logoImage} 
+    alt={SITE.company} 
+    class="h-[150px] object-contain animate-splash-up delay-100" 
+  />
 </div>
-
-<style>
-  #splash {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    animation: splash-fade-in 0.4s ease both;
-  }
-  @keyframes splash-fade-in {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-
-  .splash-logo {
-    height: 150px;
-    object-fit: contain;
-    animation: splash-up 0.5s ease 0.1s both;
-  }
-  .splash-divider {
-    width: 32px;
-    height: 2px;
-    background: var(--color-primary);
-    border-radius: 99px;
-    animation: splash-up 0.5s ease 0.2s both;
-  }
-  @keyframes splash-up {
-    from { opacity: 0; transform: translateY(10px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  #splash.exit {
-    animation: splash-out 0.35s ease forwards;
-  }
-  @keyframes splash-out {
-    from { opacity: 1; }
-    to   { opacity: 0; }
-  }
-</style>
 
 <script>
   const splash   = document.getElementById('splash')!;
@@ -67,10 +33,10 @@ const { revealId, duration = 2000 } = Astro.props;
   const target   = document.getElementById(revealId)!;
 
   setTimeout(() => {
-    splash.classList.add('exit');
+    splash.classList.add('animate-splash-out');
     setTimeout(() => {
       splash.style.display = 'none';
-      target.classList.add('visible');
+      target.classList.replace('opacity-0', 'opacity-100');
     }, 350);
   }, duration);
 </script>

@@ -2,6 +2,7 @@
 import { SITE } from '../config/site';
 import { Image } from 'astro:assets';
 import logoImage from '../assets/logo.png';
+import headerBg from '../assets/image.png';
 
 interface Props {
   title: string;
@@ -10,36 +11,50 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<!-- Accent bar primary di paling atas card -->
-<div class="h-1 bg-primary w-full rounded-t-xl"></div>
+<!-- Background Image Container -->
+<div class='relative overflow-hidden'>
+  <!-- Image Background with Dark Overlay -->
+  <div class='absolute inset-0 z-0'>
+    <Image
+      src={headerBg}
+      alt='Header Background'
+      class='w-full h-full object-cover'
+      loading='eager'
+    />
+    <div class='absolute inset-0 bg-slate-900/40 backdrop-blur-[1px]'></div>
+  </div>
 
-<!-- Konten header di dalam card -->
-<div class="px-6 pt-6 pb-4">
-  <div class="flex items-center gap-4 justify-center">
-    <!-- Logo Container -->
-    <div class="shrink-0">
-      <div class="w-14 h-14 flex items-center justify-center">
-        <Image
-          src={logoImage}
-          alt={SITE.company}
-          class="w-full h-full object-contain"
-          loading="eager"
-        />
+  <!-- Content Header -->
+  <div class='relative z-10 px-6 py-5'>
+    <div class='flex items-center gap-4 justify-center'>
+      <!-- Logo Container with White Circle Background for legibility -->
+      <div class='shrink-0'>
+        <div
+          class='w-12 h-12 bg-white/10 backdrop-blur-[2px] border border-white/20 rounded-xl flex items-center justify-center p-2 shadow-xl transition-transform hover:scale-105 duration-300'
+        >
+          <Image
+            src={logoImage}
+            alt={SITE.company}
+            class='w-full h-full object-contain'
+            loading='eager'
+          />
+        </div>
+      </div>
+
+      <!-- Title & Company Container -->
+      <div class='flex flex-col'>
+        <h3 class='text-[18px] font-bold text-white tracking-tight leading-tight drop-shadow-md'>
+          {title}
+        </h3>
+        <p
+          class='text-[10px] font-semibold text-primary-light/90 tracking-widest uppercase opacity-90'
+        >
+          {SITE.company}
+        </p>
       </div>
     </div>
 
-    <!-- Title & Company Container -->
-    <div class="flex flex-col">
-      <h3 class="text-[18px] font-semibold tracking-tight leading-none mb-1">
-        {title}
-      </h3>
-      <p class="text-[11px] font-medium text-primary tracking-wider">
-        {SITE.company}
-      </p>
-    </div>
+    <!-- Bottom Accent Bar -->
+    <div class='absolute bottom-0 left-0 right-0 h-[1.5px] bg-white/10'></div>
   </div>
-
-  
 </div>
-
-
