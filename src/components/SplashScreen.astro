@@ -2,9 +2,7 @@
 import { SITE } from '../config/site';
 
 interface Props {
-  /** ID elemen utama yang akan ditampilkan setelah splash selesai */
   revealId: string;
-  /** Durasi splash tampil dalam milidetik (default: 2000) */
   duration?: number;
 }
 
@@ -14,9 +12,6 @@ const { revealId, duration = 2000 } = Astro.props;
 <!-- SPLASH SCREEN -->
 <div id="splash" aria-hidden="true" data-reveal={revealId} data-duration={duration}>
   <img src={SITE.logo} alt={SITE.company} class="splash-logo" />
-  <div class="splash-divider"></div>
-  <p class="splash-welcome">Selamat Datang di</p>
-  <p class="splash-name">{SITE.company}</p>
 </div>
 
 <style>

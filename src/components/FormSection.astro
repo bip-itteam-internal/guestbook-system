@@ -1,0 +1,26 @@
+---
+/**
+ * Komponen pembungkus section form dengan header indikator hijau.
+ */
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<section class="space-y-4">
+  <div class="flex items-center gap-2">
+    <!-- Indikator Hijau -->
+    <div class="w-1 h-4 bg-primary rounded-full"></div>
+    <!-- Judul Section -->
+    <h2 class="text-[11px] font-medium text-slate-800 uppercase tracking-widest">
+      {title}
+    </h2>
+  </div>
+
+  <!-- Slot untuk field di dalam section -->
+  <div class="flex flex-col gap-5">
+    <slot />
+  </div>
+</section>

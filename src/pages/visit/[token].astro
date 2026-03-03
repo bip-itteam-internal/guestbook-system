@@ -12,6 +12,9 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SplashScreen from '../../components/SplashScreen.astro';
 import FormField from '../../components/FormField.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import FormSection from '../../components/FormSection.astro';
+import VisitTypeSelector from '../../components/VisitTypeSelector.astro';
 import { SITE } from '../../config/site';
 
 const { token } = Astro.params;
@@ -72,111 +75,84 @@ if (!token) {
   <div id="main-content">
     <main class="w-full max-w-[480px] mx-auto">
 
-      <!-- Header -->
-      <div class="mb-7 text-center">
-        <img src={SITE.logo} alt={SITE.company} class="h-12 mx-auto object-contain mb-4" />
-        <h1 class="text-xl font-bold text-slate-900 tracking-tight">Buku Tamu</h1>
-        <p class="text-xs font-semibold text-slate-500 mt-0.5 tracking-wide">{SITE.company}</p>
-        <p class="text-sm text-slate-400 mt-1.5">Mohon isi formulir berikut dengan lengkap</p>
-      </div>
-
-      <!-- Form Card -->
+      <!-- Form Card (header + form dalam satu card) -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <!-- Accent bar atas -->
-        <div class="h-1 bg-primary w-full"></div>
+        <!-- Header di bagian atas card -->
+        <PageHeader
+          title="Buku Tamu"
+          description="Mohon isi formulir berikut dengan lengkap"
+        />
+
+        <!-- Divider pemisah header & form -->
+        <div class="h-px bg-slate-100 mx-6"></div>
 
         <form id="guest-form" data-token={token} class="flex flex-col gap-5 p-6" novalidate>
 
-          <!-- 1. Jenis Kunjungan -->
-          <div class="flex flex-col gap-2">
-            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              Jenis Kunjungan <span class="text-red-400">*</span>
-            </label>
-            <div class="grid grid-cols-2 gap-2.5">
-              <!-- Personal -->
-              <label class="flex items-center gap-2.5 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer transition-all has-[:checked]:border-primary has-[:checked]:bg-primary-light has-[:checked]:shadow-sm">
-                <input type="radio" name="jenisKunjungan" value="personal" class="accent-primary" checked />
-                <div>
-                  <p class="text-sm font-semibold text-slate-800">Personal</p>
-                  <p class="text-xs text-slate-400">1 orang</p>
-                </div>
-              </label>
-              <!-- Rombongan -->
-              <label class="flex items-center gap-2.5 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer transition-all has-[:checked]:border-primary has-[:checked]:bg-primary-light has-[:checked]:shadow-sm">
-                <input type="radio" name="jenisKunjungan" value="rombongan" class="accent-primary" />
-                <div>
-                  <p class="text-sm font-semibold text-slate-800">Rombongan</p>
-                  <p class="text-xs text-slate-400">Perwakilan</p>
-                </div>
-              </label>
-            </div>
-            <!-- Info rombongan — muncul saat radio "rombongan" dipilih -->
-            <div id="info-rombongan" class="hidden bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 text-xs text-amber-700 flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
-              </svg>
-              <span>Untuk rombongan, cukup satu orang yang mengisi sebagai perwakilan.</span>
-            </div>
-          </div>
+          <!-- Section 1: Jenis Kunjungan -->
+          <FormSection title="Jenis Kunjungan">
+            
+            
+            <!-- 2. Waktu Kunjungan (otomatis)
+            <FormField
+              id="waktuKunjungan"
+              label="Waktu Kunjungan"
+              disabled
+            />
+            <input type="hidden" id="timestampKunjungan" name="timestampKunjungan" /> -->
+            <VisitTypeSelector />
+          </FormSection>
 
-          <div class="border-t border-slate-100"></div>
 
-          <!-- 2. Waktu Kunjungan (otomatis, tidak bisa diubah user) -->
-          <FormField
-            id="waktuKunjungan"
-            label="Waktu Kunjungan"
-            icon="calendar"
-            disabled
-          />
-          <!-- Timestamp ISO 8601 yang dikirim ke API -->
-          <input type="hidden" id="timestampKunjungan" name="timestampKunjungan" />
+          <!-- Section 2: Data Pengunjung -->
+          <FormSection title="Data Pengunjung">
+            <FormField
+              id="namaLengkap"
+              label="Nama Lengkap"
+              placeholder="Contoh: Budi Santoso"
+              required
+            />
 
-          <div class="border-t border-slate-100"></div>
+            <FormField
+              id="nomorHP"
+              label="Nomor HP"
+              type="tel"
+              placeholder="Contoh: 08123456789"
+              required
+            />
 
-          <!-- 3. Data pengunjung -->
-          <FormField
-            id="namaLengkap"
-            label="Nama Lengkap"
-            placeholder="Contoh: Budi Santoso"
-            required
-          />
+            <FormField
+              id="instansi"
+              label="Instansi / Perusahaan / Alamat"
+              placeholder="Contoh: PT Maju Bersama / Jl. Melati No. 1"
+              required
+            />
 
-          <FormField
-            id="nomorHP"
-            label="Nomor HP"
-            type="tel"
-            placeholder="Contoh: 08123456789"
-            required
-          />
+            <FormField
+              id="platNomor"
+              label="Plat Nomor Kendaraan"
+              placeholder="Contoh: B 1234 ABC"
+              required
+              uppercase
+            />
+          </FormSection>
 
-          <FormField
-            id="instansi"
-            label="Instansi / Perusahaan"
-            placeholder="Contoh: PT Maju Bersama"
-            required
-          />
 
-          <FormField
-            id="keperluan"
-            label="Keperluan"
-            placeholder="Contoh: Rapat, Presentasi, dll."
-            required
-          />
+          <!-- Section 3: Detail Kunjungan -->
+          <FormSection title="Detail Kunjungan">
+            <FormField
+              id="keperluan"
+              label="Keperluan"
+              placeholder="Contoh: Rapat, Presentasi, dll."
+              required
+            />
 
-          <FormField
-            id="bertemuDengan"
-            label="Bertemu Dengan"
-            placeholder="Contoh: Bapak Andi (Marketing)"
-            required
-          />
-
-          <FormField
-            id="platNomor"
-            label="Plat Nomor Kendaraan"
-            placeholder="Contoh: B 1234 ABC"
-            required
-            uppercase
-          />
+            <FormField
+              id="bertemuDengan"
+              label="Bertemu Dengan"
+              placeholder="Contoh: Bapak Andi (Marketing)"
+              required
+            />
+          </FormSection>
 
           <!-- Tombol Submit -->
           <button id="submit-btn" type="submit"
@@ -246,8 +222,8 @@ if (!token) {
     const now     = new Date();
     const tanggal = now.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: TZ });
     const waktu   = now.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit', timeZone: TZ });
-    waktuEl.value = `${tanggal} — ${waktu} ${TZ_LBL}`;
-    tsEl.value    = now.toISOString();
+    if (waktuEl) waktuEl.value = `${tanggal} — ${waktu} ${TZ_LBL}`;
+    if (tsEl)    tsEl.value    = now.toISOString();
   }
   fillDatetime();
   setInterval(fillDatetime, 60_000); // update setiap menit
@@ -280,7 +256,7 @@ if (!token) {
     const rules: Array<[string, (v: string) => boolean, string]> = [
       ['namaLengkap',   v => v.length >= 3,             'Nama lengkap minimal 3 karakter.'],
       ['nomorHP',       v => /^[0-9]{10,15}$/.test(v),  'Nomor HP harus angka, 10–15 digit.'],
-      ['instansi',      v => v.length > 0,              'Instansi / perusahaan wajib diisi.'],
+      ['instansi',      v => v.length > 0,              'Instansi / perusahaan / alamat wajib diisi.'],
       ['keperluan',     v => v.length > 0,              'Keperluan wajib diisi.'],
       ['bertemuDengan', v => v.length > 0,              'Nama yang akan ditemui wajib diisi.'],
       ['platNomor',     v => v.length > 0,              'Plat nomor kendaraan wajib diisi.'],
