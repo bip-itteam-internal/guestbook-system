@@ -33,7 +33,7 @@ const { revealId, duration = 2000 } = Astro.props;
   }
 
   .splash-logo {
-    height: 72px;
+    height: 150px;
     object-fit: contain;
     animation: splash-up 0.5s ease 0.1s both;
   }
@@ -43,22 +43,6 @@ const { revealId, duration = 2000 } = Astro.props;
     background: var(--color-primary);
     border-radius: 99px;
     animation: splash-up 0.5s ease 0.2s both;
-  }
-  .splash-welcome {
-    font-size: 13px;
-    font-weight: 500;
-    color: #94a3b8;
-    letter-spacing: 0.3px;
-    animation: splash-up 0.5s ease 0.25s both;
-  }
-  .splash-name {
-    font-size: 15px;
-    font-weight: 700;
-    color: #0f172a;
-    text-align: center;
-    line-height: 1.5;
-    max-width: 240px;
-    animation: splash-up 0.5s ease 0.35s both;
   }
   @keyframes splash-up {
     from { opacity: 0; transform: translateY(10px); }
