@@ -18,7 +18,6 @@ import VisitTypeSelector from '../../components/VisitTypeSelector.astro';
 import { SITE } from '../../config/site';
 
 const { token } = Astro.params;
-const description = "Mohon isi formulir berikut dengan lengkap";
 
 // Redirect jika token tidak ada di URL
 if (!token) {
@@ -69,14 +68,7 @@ if (!token) {
 
         <form id="guest-form" data-token={token} class="flex flex-col gap-6 p-6" novalidate>
 
-          <!-- Section 0: Informasi -->
-          {description && (
-            <FormSection title="Informasi">
-              <p class="text-[13px] font-medium text-slate-500 leading-relaxed">
-                {description}
-              </p>
-            </FormSection>
-          )}
+
 
           <!-- Section 1: Jenis Kunjungan -->
           <FormSection title="Jenis Kunjungan">
