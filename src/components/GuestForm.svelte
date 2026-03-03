@@ -7,6 +7,7 @@
 
   // Data State
   let jenisKunjungan: "personal" | "rombongan" = "personal";
+  let jumlahOrang = "";
   let namaLengkap = "";
   let nomorHP = "";
   let instansi = "";
@@ -61,6 +62,14 @@
       valid = false;
     }
 
+    if (jenisKunjungan === "rombongan") {
+      const parsedNumber = parseInt(jumlahOrang, 10);
+      if (!jumlahOrang || isNaN(parsedNumber) || parsedNumber < 2) {
+        errors.jumlahOrang = "Jumlah orang harus diisi valid (minimal 2).";
+        valid = false;
+      }
+    }
+
     return valid;
   }
 
@@ -73,6 +82,7 @@
     const payload = {
       token,
       jenisKunjungan,
+      jumlahOrang: jenisKunjungan === "rombongan" ? parseInt(jumlahOrang, 10) : 1,
       namaLengkap: namaLengkap.trim(),
       nomorHP: nomorHP.trim(),
       instansi: instansi.trim(),
@@ -107,6 +117,20 @@
   <!-- Section 1: Jenis Kunjungan -->
   <FormSection title="Jenis Kunjungan">
     <VisitTypeSelector bind:selectedType={jenisKunjungan} />
+    
+    {#if jenisKunjungan === "rombongan"}
+      <div class="animate-splash-up">
+        <FormField
+          id="jumlahOrang"
+          label="Total Jumlah Orang"
+          type="number"
+          placeholder="Contoh: 5"
+          required
+          bind:value={jumlahOrang}
+          error={errors.jumlahOrang}
+        />
+      </div>
+    {/if}
   </FormSection>
 
   <!-- Section 2: Data Pengunjung -->
