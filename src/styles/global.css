@@ -8,9 +8,10 @@
 
 /* ─── Base typography & smoothing ─────────────────────────── */
 body {
-   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+   font-family: 'Work Sans', ui-sans-serif, system-ui, sans-serif;
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
+   overflow-x: hidden;
 }
 
 /* ─── Refined input base ───────────────────────────────────── */

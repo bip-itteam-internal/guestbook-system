@@ -18,27 +18,12 @@ import VisitTypeSelector from '../../components/VisitTypeSelector.astro';
 import { SITE } from '../../config/site';
 
 const { token } = Astro.params;
+const description = "Mohon isi formulir berikut dengan lengkap";
 
 // Redirect jika token tidak ada di URL
 if (!token) {
   return Astro.redirect('/invalid?reason=invalid');
 }
-
-/**
- * TODO: Aktifkan validasi token ke backend sebelum production.
- *
- * const API_BASE = import.meta.env.PUBLIC_API_BASE_URL;
- * const res  = await fetch(`${API_BASE}/api/token/validate`, {
- *   method:  'POST',
- *   headers: { 'Content-Type': 'application/json' },
- *   body:    JSON.stringify({ token }),
- * });
- * if (!res.ok) return Astro.redirect('/invalid?reason=invalid');
- * const { status } = await res.json();
- * if (status === 'expired')  return Astro.redirect('/invalid?reason=expired');
- * if (status === 'used')     return Astro.redirect('/invalid?reason=used');
- * if (status !== 'valid')    return Astro.redirect('/invalid?reason=invalid');
- */
 ---
 
 <BaseLayout
@@ -63,7 +48,7 @@ if (!token) {
     #main-content {
       opacity: 0;
       transition: opacity 0.4s ease;
-      padding: 2.5rem 1rem;
+      padding: 1.5rem 1rem 6rem 1rem;
     }
     #main-content.visible { opacity: 1; }
   </style>
@@ -74,19 +59,24 @@ if (!token) {
   <!-- ─── MAIN FORM ──────────────────────────────────────────── -->
   <div id="main-content">
     <main class="w-full max-w-[480px] mx-auto">
-
       <!-- Form Card (header + form dalam satu card) -->
       <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <!-- Header di bagian atas card -->
-        <PageHeader
-          title={SITE.appName}
-          description="Mohon isi formulir berikut dengan lengkap"
-        />
+        <PageHeader title={SITE.appName} />
 
         <!-- Divider pemisah header & form -->
-        <div class="h-px bg-slate-100 mx-6"></div>
+        <div class="h-1 bg-slate-100"></div>
 
-        <form id="guest-form" data-token={token} class="flex flex-col gap-5 p-6" novalidate>
+        <form id="guest-form" data-token={token} class="flex flex-col gap-6 p-6" novalidate>
+
+          <!-- Section 0: Informasi -->
+          {description && (
+            <FormSection title="Informasi">
+              <p class="text-[13px] font-medium text-slate-500 leading-relaxed">
+                {description}
+              </p>
+            </FormSection>
+          )}
 
           <!-- Section 1: Jenis Kunjungan -->
           <FormSection title="Jenis Kunjungan">
@@ -168,6 +158,9 @@ if (!token) {
       </p>
 
     </main>
+    <p class="text-[10px] text-center text-slate-400 mt-8 mb-4 uppercase tracking-widest font-medium">
+      &copy; {new Date().getFullYear()} {SITE.copyright}
+    </p>
   </div><!-- /#main-content -->
 
   <!-- Toast Notification — muncul jika ada error submit -->

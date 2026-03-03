@@ -12,4 +12,5 @@ export const SITE = {
   timezone:      'Asia/Jakarta',
   timezoneLabel: 'WIB',
   locale:        'id-ID',
+  copyright:     'One Bharata - ERP',
 } as const;
