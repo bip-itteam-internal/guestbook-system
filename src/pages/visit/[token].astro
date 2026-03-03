@@ -1,0 +1,240 @@
+---
+import '../../styles/global.css';
+
+const { token } = Astro.params;
+
+if (!token) {
+  return Astro.redirect('/invalid');
+}
+
+// TODO: Validasi token ke backend
+// const API_BASE = import.meta.env.PUBLIC_API_BASE_URL;
+// const res = await fetch(`${API_BASE}/api/token/validate`, {
+//   method: 'POST',
+//   headers: { 'Content-Type': 'application/json' },
+//   body: JSON.stringify({ token }),
+// });
+// const data = await res.json();
+// if (data.status !== 'valid') return Astro.redirect('/invalid');
+---
+
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Formulir buku tamu digital. Isi data kunjungan Anda." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Buku Tamu – PT. Bharata Internasional Pharmaceutical</title>
+  </head>
+  <body class="min-h-screen bg-gray-50 px-4 py-10">
+    <main class="w-full max-w-[480px] mx-auto">
+
+      <!-- Header -->
+      <div class="mb-8 text-center">
+        <div class="mx-auto mb-4">
+          <img src="/logo.png" alt="PT. Bharata Internasional Pharmaceutical" class="h-14 mx-auto object-contain" />
+        </div>
+        <h1 class="text-xl font-bold text-slate-800">Buku Tamu</h1>
+        <p class="text-xs font-semibold text-slate-500 mt-0.5">PT. Bharata Internasional Pharmaceutical</p>
+        <p class="text-sm text-gray-500 mt-1">Mohon isi formulir berikut dengan lengkap</p>
+      </div>
+
+      <!-- Form Card -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+        <form id="guest-form" data-token={token} class="flex flex-col gap-5" novalidate>
+
+          <!-- Nama Lengkap -->
+          <div class="flex flex-col gap-1.5">
+            <label for="namaLengkap" class="text-sm font-medium text-gray-700">
+              Nama Lengkap <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="namaLengkap"
+              name="namaLengkap"
+              type="text"
+              placeholder="Contoh: Budi Santoso"
+              class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#009e41] focus:border-transparent transition"
+            />
+            <p id="error-namaLengkap" class="text-xs text-red-600 hidden"></p>
+          </div>
+
+          <!-- Nomor HP -->
+          <div class="flex flex-col gap-1.5">
+            <label for="nomorHP" class="text-sm font-medium text-gray-700">
+              Nomor HP <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="nomorHP"
+              name="nomorHP"
+              type="tel"
+              placeholder="Contoh: 08123456789"
+              class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#009e41] focus:border-transparent transition"
+            />
+            <p id="error-nomorHP" class="text-xs text-red-600 hidden"></p>
+          </div>
+
+          <!-- Instansi/Perusahaan -->
+          <div class="flex flex-col gap-1.5">
+            <label for="instansi" class="text-sm font-medium text-gray-700">
+              Instansi / Perusahaan <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="instansi"
+              name="instansi"
+              type="text"
+              placeholder="Contoh: PT Maju Bersama"
+              class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#009e41] focus:border-transparent transition"
+            />
+            <p id="error-instansi" class="text-xs text-red-600 hidden"></p>
+          </div>
+
+          <!-- Keperluan -->
+          <div class="flex flex-col gap-1.5">
+            <label for="keperluan" class="text-sm font-medium text-gray-700">
+              Keperluan <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="keperluan"
+              name="keperluan"
+              type="text"
+              placeholder="Contoh: Rapat, Presentasi, dll."
+              class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#009e41] focus:border-transparent transition"
+            />
+            <p id="error-keperluan" class="text-xs text-red-600 hidden"></p>
+          </div>
+
+          <!-- Bertemu Dengan -->
+          <div class="flex flex-col gap-1.5">
+            <label for="bertemuDengan" class="text-sm font-medium text-gray-700">
+              Bertemu Dengan <span class="text-red-500">*</span>
+            </label>
+            <input
+              id="bertemuDengan"
+              name="bertemuDengan"
+              type="text"
+              placeholder="Contoh: Bapak Andi (Marketing)"
+              class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#009e41] focus:border-transparent transition"
+            />
+            <p id="error-bertemuDengan" class="text-xs text-red-600 hidden"></p>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            id="submit-btn"
+            type="submit"
+            class="w-full h-12 bg-[#009e41] text-white font-semibold rounded-lg transition hover:bg-[#007d33] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-1"
+          >
+            Kirim Data
+          </button>
+
+        </form>
+      </div>
+
+      <p class="text-xs text-center text-gray-400 mt-6">
+        Data Anda tersimpan dengan aman dan hanya digunakan untuk keperluan kunjungan.
+      </p>
+
+    </main>
+  </body>
+</html>
+
+<script>
+  const form = document.getElementById('guest-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+  let isSubmitting = false;
+
+  // Helper: tampilkan error
+  function showError(fieldId: string, message: string) {
+    const el = document.getElementById(`error-${fieldId}`);
+    if (el) { el.textContent = message; el.classList.remove('hidden'); }
+    const input = document.getElementById(fieldId);
+    if (input) input.classList.add('border-red-400');
+  }
+
+  // Helper: hapus error
+  function clearError(fieldId: string) {
+    const el = document.getElementById(`error-${fieldId}`);
+    if (el) { el.textContent = ''; el.classList.add('hidden'); }
+    const input = document.getElementById(fieldId);
+    if (input) input.classList.remove('border-red-400');
+  }
+
+  // Validasi semua field
+  function validate(data: Record<string, string>): boolean {
+    let valid = true;
+
+    if (!data.namaLengkap || data.namaLengkap.length < 3) {
+      showError('namaLengkap', 'Nama lengkap minimal 3 karakter.');
+      valid = false;
+    } else clearError('namaLengkap');
+
+    if (!data.nomorHP || !/^[0-9]{10,15}$/.test(data.nomorHP)) {
+      showError('nomorHP', 'Nomor HP harus berupa angka, 10–15 digit.');
+      valid = false;
+    } else clearError('nomorHP');
+
+    if (!data.instansi) {
+      showError('instansi', 'Instansi / perusahaan wajib diisi.');
+      valid = false;
+    } else clearError('instansi');
+
+    if (!data.keperluan) {
+      showError('keperluan', 'Keperluan wajib diisi.');
+      valid = false;
+    } else clearError('keperluan');
+
+    if (!data.bertemuDengan) {
+      showError('bertemuDengan', 'Nama yang akan ditemui wajib diisi.');
+      valid = false;
+    } else clearError('bertemuDengan');
+
+    return valid;
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    const token = form.dataset.token;
+    const formData = new FormData(form);
+
+    const data: Record<string, string> = {
+      namaLengkap:   (formData.get('namaLengkap') as string ?? '').trim(),
+      nomorHP:       (formData.get('nomorHP') as string ?? '').trim(),
+      instansi:      (formData.get('instansi') as string ?? '').trim(),
+      keperluan:     (formData.get('keperluan') as string ?? '').trim(),
+      bertemuDengan: (formData.get('bertemuDengan') as string ?? '').trim(),
+    };
+
+    if (!validate(data)) return;
+
+    // Set loading state
+    isSubmitting = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Mengirim...';
+
+    try {
+      const API_BASE = import.meta.env.PUBLIC_API_BASE_URL ?? '';
+      const res = await fetch(`${API_BASE}/api/guest`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, ...data }),
+      });
+
+      if (res.ok) {
+        window.location.href = '/success';
+      } else {
+        alert('Gagal mengirim data. Silakan coba lagi.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Kirim Data';
+      }
+    } catch {
+      alert('Terjadi kesalahan koneksi. Periksa internet Anda.');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Kirim Data';
+    } finally {
+      isSubmitting = false;
+    }
+  });
+</script>
