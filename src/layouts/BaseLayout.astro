@@ -11,22 +11,25 @@ interface Props {
 const {
   title,
   description = `${SITE.appName} – ${SITE.company}`,
-  bodyClass   = 'min-h-screen bg-gray-50',
+  bodyClass = 'min-h-screen bg-gray-50',
 } = Astro.props;
 ---
 
-<!DOCTYPE html>
-<html lang="id">
+<!doctype html>
+<html lang='id'>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <meta name='description' content={description} />
+    <link rel='preconnect' href='https://fonts.googleapis.com' />
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin />
+    <link
+      href='https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;800&display=swap'
+      rel='stylesheet'
+    />
+    <link rel='icon' type='image/png' href='/logo.png' />
     <title>{title} | {SITE.company}</title>
-    <slot name="head" />
+    <slot name='head' />
   </head>
   <body class={bodyClass}>
     <slot />
