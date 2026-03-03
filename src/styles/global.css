@@ -5,3 +5,16 @@
    --color-primary-dark: #007d33;
    --color-primary-light: #e6f5ec;
 }
+
+/* ─── Base typography & smoothing ─────────────────────────── */
+body {
+   font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Refined input base ───────────────────────────────────── */
+input[type="text"],
+input[type="tel"] {
+   font-family: inherit;
+}

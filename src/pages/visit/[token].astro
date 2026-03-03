@@ -10,11 +10,7 @@ if (!token) {
 
 // TODO: Validasi token ke backend
 // const API_BASE = import.meta.env.PUBLIC_API_BASE_URL;
-// const res = await fetch(`${API_BASE}/api/token/validate`, {
-//   method: 'POST',
-//   headers: { 'Content-Type': 'application/json' },
-//   body: JSON.stringify({ token }),
-// });
+// const res = await fetch(`${API_BASE}/api/token/validate`, { ... });
 // const data = await res.json();
 // if (data.status !== 'valid') return Astro.redirect('/invalid');
 ---
@@ -22,52 +18,48 @@ if (!token) {
 <BaseLayout
   title="Buku Tamu"
   description={`Formulir buku tamu digital ${SITE.company}. Isi data kunjungan Anda.`}
-  bodyClass="min-h-screen bg-gray-50 px-4 py-10"
+  bodyClass="min-h-screen bg-[#f8fafc] px-4 py-10"
 >
   <main class="w-full max-w-[480px] mx-auto">
 
     <!-- Header -->
-    <div class="mb-8 text-center">
-      <div class="mx-auto mb-4">
-        <img src={SITE.logo} alt={SITE.company} class="h-14 mx-auto object-contain" />
-      </div>
-      <h1 class="text-xl font-bold text-slate-800">Buku Tamu</h1>
-      <p class="text-xs font-semibold text-slate-500 mt-0.5">{SITE.company}</p>
-      <p class="text-sm text-gray-500 mt-1">Mohon isi formulir berikut dengan lengkap</p>
+    <div class="mb-7 text-center">
+      <img src={SITE.logo} alt={SITE.company} class="h-12 mx-auto object-contain mb-4" />
+      <h1 class="text-xl font-bold text-slate-900 tracking-tight">Buku Tamu</h1>
+      <p class="text-xs font-semibold text-slate-500 mt-0.5 tracking-wide">{SITE.company}</p>
+      <p class="text-sm text-slate-400 mt-1.5">Mohon isi formulir berikut dengan lengkap</p>
     </div>
 
     <!-- Form Card -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-      <form id="guest-form" data-token={token} class="flex flex-col gap-5" novalidate>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <!-- Top accent bar -->
+      <div class="h-1 bg-primary w-full"></div>
+
+      <form id="guest-form" data-token={token} class="flex flex-col gap-5 p-6" novalidate>
 
         <!-- Jenis Kunjungan -->
         <div class="flex flex-col gap-2">
-          <label class="text-sm font-medium text-gray-700">
-            Jenis Kunjungan <span class="text-red-500">*</span>
+          <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Jenis Kunjungan <span class="text-red-400">*</span>
           </label>
-          <div class="grid grid-cols-2 gap-3" id="jenis-kunjungan-group">
-            <label
-              class="flex items-center gap-2.5 border-2 border-gray-200 rounded-lg px-4 py-3 cursor-pointer transition has-[:checked]:border-primary has-[:checked]:bg-primary-light"
-            >
+          <div class="grid grid-cols-2 gap-2.5">
+            <label class="flex items-center gap-2.5 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer transition-all has-[:checked]:border-primary has-[:checked]:bg-primary-light has-[:checked]:shadow-sm">
               <input type="radio" name="jenisKunjungan" value="personal" class="accent-primary" checked />
               <div>
-                <p class="text-sm font-semibold text-gray-800">Personal</p>
-                <p class="text-xs text-gray-400">1 orang</p>
+                <p class="text-sm font-semibold text-slate-800">Personal</p>
+                <p class="text-xs text-slate-400">1 orang</p>
               </div>
             </label>
-            <label
-              class="flex items-center gap-2.5 border-2 border-gray-200 rounded-lg px-4 py-3 cursor-pointer transition has-[:checked]:border-primary has-[:checked]:bg-primary-light"
-            >
+            <label class="flex items-center gap-2.5 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer transition-all has-[:checked]:border-primary has-[:checked]:bg-primary-light has-[:checked]:shadow-sm">
               <input type="radio" name="jenisKunjungan" value="rombongan" class="accent-primary" />
               <div>
-                <p class="text-sm font-semibold text-gray-800">Rombongan</p>
-                <p class="text-xs text-gray-400">Perwakilan</p>
+                <p class="text-sm font-semibold text-slate-800">Rombongan</p>
+                <p class="text-xs text-slate-400">Perwakilan</p>
               </div>
             </label>
           </div>
-
           <!-- Info rombongan -->
-          <div id="info-rombongan" class="hidden bg-amber-50 border border-amber-200 rounded-lg px-4 py-2.5 text-xs text-amber-700 flex items-start gap-2">
+          <div id="info-rombongan" class="hidden bg-amber-50 border border-amber-200 rounded-xl px-4 py-2.5 text-xs text-amber-700 flex items-start gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
             </svg>
@@ -75,114 +67,116 @@ if (!token) {
           </div>
         </div>
 
+        <!-- Divider -->
+        <div class="border-t border-slate-100"></div>
+
         <!-- Tanggal & Waktu (auto-fill, read-only) -->
         <div class="flex gap-3">
           <div class="flex flex-col gap-1.5 flex-1">
-            <label class="text-sm font-medium text-gray-700 flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               Tanggal
             </label>
             <input id="tanggalKunjungan" name="tanggalKunjungan" type="text" disabled
-              class="w-full h-12 px-4 border border-gray-200 rounded-lg text-sm text-gray-500 bg-gray-50 cursor-not-allowed" />
+              class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-400 bg-slate-50 cursor-not-allowed" />
           </div>
           <div class="flex flex-col gap-1.5 flex-1">
-            <label class="text-sm font-medium text-gray-700 flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Waktu
             </label>
             <input id="waktuKunjungan" name="waktuKunjungan" type="text" disabled
-              class="w-full h-12 px-4 border border-gray-200 rounded-lg text-sm text-gray-500 bg-gray-50 cursor-not-allowed" />
+              class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-400 bg-slate-50 cursor-not-allowed" />
           </div>
         </div>
         <input type="hidden" id="timestampKunjungan" name="timestampKunjungan" />
 
+        <!-- Divider -->
+        <div class="border-t border-slate-100"></div>
+
         <!-- Nama Lengkap -->
         <div class="flex flex-col gap-1.5">
-          <label for="namaLengkap" class="text-sm font-medium text-gray-700">
-            Nama Lengkap <span class="text-red-500">*</span>
+          <label for="namaLengkap" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Nama Lengkap <span class="text-red-400">*</span>
           </label>
           <input id="namaLengkap" name="namaLengkap" type="text" placeholder="Contoh: Budi Santoso"
-            class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" />
-          <p id="error-namaLengkap" class="text-xs text-red-600 hidden"></p>
+            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+          <p id="error-namaLengkap" class="text-xs text-red-500 hidden"></p>
         </div>
 
         <!-- Nomor HP -->
         <div class="flex flex-col gap-1.5">
-          <label for="nomorHP" class="text-sm font-medium text-gray-700">
-            Nomor HP <span class="text-red-500">*</span>
+          <label for="nomorHP" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Nomor HP <span class="text-red-400">*</span>
           </label>
           <input id="nomorHP" name="nomorHP" type="tel" placeholder="Contoh: 08123456789"
-            class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" />
-          <p id="error-nomorHP" class="text-xs text-red-600 hidden"></p>
+            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+          <p id="error-nomorHP" class="text-xs text-red-500 hidden"></p>
         </div>
 
-        <!-- Instansi/Perusahaan -->
+        <!-- Instansi -->
         <div class="flex flex-col gap-1.5">
-          <label for="instansi" class="text-sm font-medium text-gray-700">
-            Instansi / Perusahaan <span class="text-red-500">*</span>
+          <label for="instansi" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Instansi / Perusahaan <span class="text-red-400">*</span>
           </label>
           <input id="instansi" name="instansi" type="text" placeholder="Contoh: PT Maju Bersama"
-            class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" />
-          <p id="error-instansi" class="text-xs text-red-600 hidden"></p>
+            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+          <p id="error-instansi" class="text-xs text-red-500 hidden"></p>
         </div>
 
         <!-- Keperluan -->
         <div class="flex flex-col gap-1.5">
-          <label for="keperluan" class="text-sm font-medium text-gray-700">
-            Keperluan <span class="text-red-500">*</span>
+          <label for="keperluan" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Keperluan <span class="text-red-400">*</span>
           </label>
           <input id="keperluan" name="keperluan" type="text" placeholder="Contoh: Rapat, Presentasi, dll."
-            class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" />
-          <p id="error-keperluan" class="text-xs text-red-600 hidden"></p>
+            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+          <p id="error-keperluan" class="text-xs text-red-500 hidden"></p>
         </div>
 
         <!-- Bertemu Dengan -->
         <div class="flex flex-col gap-1.5">
-          <label for="bertemuDengan" class="text-sm font-medium text-gray-700">
-            Bertemu Dengan <span class="text-red-500">*</span>
+          <label for="bertemuDengan" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Bertemu Dengan <span class="text-red-400">*</span>
           </label>
           <input id="bertemuDengan" name="bertemuDengan" type="text" placeholder="Contoh: Bapak Andi (Marketing)"
-            class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" />
-          <p id="error-bertemuDengan" class="text-xs text-red-600 hidden"></p>
+            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+          <p id="error-bertemuDengan" class="text-xs text-red-500 hidden"></p>
         </div>
 
         <!-- Plat Nomor -->
         <div class="flex flex-col gap-1.5">
-          <label for="platNomor" class="text-sm font-medium text-gray-700">
-            Plat Nomor Kendaraan <span class="text-red-500">*</span>
+          <label for="platNomor" class="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Plat Nomor Kendaraan <span class="text-red-400">*</span>
           </label>
           <input id="platNomor" name="platNomor" type="text" placeholder="Contoh: B 1234 ABC"
-            class="w-full h-12 px-4 border border-gray-300 rounded-lg text-base text-gray-800 placeholder-gray-400 uppercase focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition" />
-          <p id="error-platNomor" class="text-xs text-red-600 hidden"></p>
+            class="w-full h-11 px-3.5 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-300 uppercase focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" />
+          <p id="error-platNomor" class="text-xs text-red-500 hidden"></p>
         </div>
 
-        <!-- Submit Button -->
+        <!-- Submit -->
         <button id="submit-btn" type="submit"
-          class="w-full h-12 bg-primary text-white font-semibold rounded-lg transition hover:bg-primary-dark active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-1">
+          class="w-full h-12 bg-primary text-white font-semibold rounded-xl transition-all hover:bg-primary-dark active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-sm tracking-wide mt-1">
           Kirim Data
         </button>
 
       </form>
     </div>
 
-    <p class="text-xs text-center text-gray-400 mt-6">
+    <p class="text-xs text-center text-slate-400 mt-5">
       Data Anda tersimpan dengan aman dan hanya digunakan untuk keperluan kunjungan.
     </p>
 
   </main>
 
-  <!-- ─── Inline Toast Notification ─────────────────────────── -->
-  <div
-    id="toast"
-    role="alert"
-    aria-live="assertive"
-    class="hidden fixed bottom-6 left-4 right-4 max-w-[480px] mx-auto rounded-xl px-4 py-3 shadow-lg z-50 flex items-center gap-3 text-sm font-medium"
-  >
-    <svg id="toast-icon" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+  <!-- Inline Toast -->
+  <div id="toast" role="alert" aria-live="assertive"
+    class="hidden fixed bottom-6 left-4 right-4 max-w-[480px] mx-auto rounded-xl px-4 py-3 shadow-lg z-50 flex items-center gap-3 text-sm font-medium">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
       <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
     </svg>
     <span id="toast-msg"></span>
@@ -191,115 +185,89 @@ if (!token) {
 </BaseLayout>
 
 <script>
-  // ─── Config (diambil dari window agar bisa dipakai di sini) ──
   const TZ     = 'Asia/Jakarta';
   const TZ_LBL = 'WIB';
   const LOCALE = 'id-ID';
 
-  // ─── Element refs ─────────────────────────────────────────────
-  const form       = document.getElementById('guest-form')      as HTMLFormElement;
-  const submitBtn  = document.getElementById('submit-btn')      as HTMLButtonElement;
-  const infoRombo  = document.getElementById('info-rombongan')  as HTMLDivElement;
+  const form       = document.getElementById('guest-form')         as HTMLFormElement;
+  const submitBtn  = document.getElementById('submit-btn')         as HTMLButtonElement;
+  const infoRombo  = document.getElementById('info-rombongan')     as HTMLDivElement;
   const radioGroup = document.querySelectorAll<HTMLInputElement>('input[name="jenisKunjungan"]');
-  const tanggalEl  = document.getElementById('tanggalKunjungan') as HTMLInputElement;
-  const waktuEl    = document.getElementById('waktuKunjungan')   as HTMLInputElement;
+  const tanggalEl  = document.getElementById('tanggalKunjungan')   as HTMLInputElement;
+  const waktuEl    = document.getElementById('waktuKunjungan')     as HTMLInputElement;
   const tsEl       = document.getElementById('timestampKunjungan') as HTMLInputElement;
-  const toastEl    = document.getElementById('toast')           as HTMLDivElement;
-  const toastMsg   = document.getElementById('toast-msg')       as HTMLSpanElement;
+  const toastEl    = document.getElementById('toast')              as HTMLDivElement;
+  const toastMsg   = document.getElementById('toast-msg')          as HTMLSpanElement;
 
   let isSubmitting = false;
   let toastTimer: ReturnType<typeof setTimeout>;
 
-  // ─── Toast helper ─────────────────────────────────────────────
+  // ─── Toast ───────────────────────────────────────────────────
   function showToast(message: string, type: 'error' | 'success' = 'error') {
     clearTimeout(toastTimer);
     toastMsg.textContent = message;
-
-    // Reset class
     toastEl.className = 'fixed bottom-6 left-4 right-4 max-w-[480px] mx-auto rounded-xl px-4 py-3 shadow-lg z-50 flex items-center gap-3 text-sm font-medium';
-    if (type === 'error') {
-      toastEl.classList.add('bg-red-600', 'text-white');
-    } else {
-      toastEl.classList.add('bg-green-600', 'text-white');
-    }
-
+    toastEl.classList.add(type === 'error' ? 'bg-red-600' : 'bg-green-600', 'text-white');
     toastTimer = setTimeout(() => toastEl.classList.add('hidden'), 4000);
   }
 
-  // ─── Auto-fill tanggal & waktu (dengan timezone yang benar) ──
+  // ─── Auto-fill datetime ───────────────────────────────────────
   function fillDatetime() {
     const now = new Date();
-    tanggalEl.value = now.toLocaleDateString(LOCALE, {
-      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-      timeZone: TZ,
-    });
-    waktuEl.value = now.toLocaleTimeString(LOCALE, {
-      hour: '2-digit', minute: '2-digit',
-      timeZone: TZ,
-    }) + ` ${TZ_LBL}`;
-    tsEl.value = now.toISOString();
+    tanggalEl.value = now.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: TZ });
+    waktuEl.value   = now.toLocaleTimeString(LOCALE, { hour: '2-digit', minute: '2-digit', timeZone: TZ }) + ` ${TZ_LBL}`;
+    tsEl.value      = now.toISOString();
   }
-
   fillDatetime();
-  // Update waktu tiap menit
   setInterval(fillDatetime, 60_000);
 
-  // ─── Toggle info rombongan ────────────────────────────────────
+  // ─── Toggle rombongan info ────────────────────────────────────
   radioGroup.forEach(radio => {
     radio.addEventListener('change', () => {
       infoRombo.classList.toggle('hidden', radio.value !== 'rombongan' || !radio.checked);
     });
   });
 
-  // ─── Validation helpers ───────────────────────────────────────
+  // ─── Validation ──────────────────────────────────────────────
   function showError(fieldId: string, message: string) {
-    const el = document.getElementById(`error-${fieldId}`);
-    if (el) { el.textContent = message; el.classList.remove('hidden'); }
+    const el    = document.getElementById(`error-${fieldId}`);
     const input = document.getElementById(fieldId) as HTMLInputElement | null;
-    if (input) input.classList.add('border-red-400');
+    if (el)    { el.textContent = message; el.classList.remove('hidden'); }
+    if (input) { input.classList.add('border-red-400', 'bg-red-50/30'); }
   }
 
   function clearError(fieldId: string) {
-    const el = document.getElementById(`error-${fieldId}`);
-    if (el) { el.textContent = ''; el.classList.add('hidden'); }
+    const el    = document.getElementById(`error-${fieldId}`);
     const input = document.getElementById(fieldId) as HTMLInputElement | null;
-    if (input) input.classList.remove('border-red-400');
+    if (el)    { el.textContent = ''; el.classList.add('hidden'); }
+    if (input) { input.classList.remove('border-red-400', 'bg-red-50/30'); }
   }
 
-  // ─── Validation rules ─────────────────────────────────────────
   function validate(data: Record<string, string>): boolean {
     let valid = true;
-
     const rules: Array<[string, (v: string) => boolean, string]> = [
-      ['namaLengkap',   v => v.length >= 3,                      'Nama lengkap minimal 3 karakter.'],
-      ['nomorHP',       v => /^[0-9]{10,15}$/.test(v),           'Nomor HP harus berupa angka, 10–15 digit.'],
-      ['instansi',      v => v.length > 0,                       'Instansi / perusahaan wajib diisi.'],
-      ['keperluan',     v => v.length > 0,                       'Keperluan wajib diisi.'],
-      ['bertemuDengan', v => v.length > 0,                       'Nama yang akan ditemui wajib diisi.'],
-      ['platNomor',     v => v.length > 0,                       'Plat nomor kendaraan wajib diisi.'],
+      ['namaLengkap',   v => v.length >= 3,              'Nama lengkap minimal 3 karakter.'],
+      ['nomorHP',       v => /^[0-9]{10,15}$/.test(v),   'Nomor HP harus angka, 10–15 digit.'],
+      ['instansi',      v => v.length > 0,               'Instansi / perusahaan wajib diisi.'],
+      ['keperluan',     v => v.length > 0,               'Keperluan wajib diisi.'],
+      ['bertemuDengan', v => v.length > 0,               'Nama yang akan ditemui wajib diisi.'],
+      ['platNomor',     v => v.length > 0,               'Plat nomor kendaraan wajib diisi.'],
     ];
-
     for (const [field, test, msg] of rules) {
-      if (!test(data[field] ?? '')) {
-        showError(field, msg);
-        valid = false;
-      } else {
-        clearError(field);
-      }
+      if (!test(data[field] ?? '')) { showError(field, msg); valid = false; }
+      else clearError(field);
     }
-
     return valid;
   }
 
-  // ─── Submit handler ───────────────────────────────────────────
+  // ─── Submit ───────────────────────────────────────────────────
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
 
     const token    = form.dataset.token;
     const formData = new FormData(form);
-
-    const str = (key: string) => (formData.get(key) as string ?? '').trim();
+    const str      = (key: string) => (formData.get(key) as string ?? '').trim();
 
     const data: Record<string, string> = {
       jenisKunjungan: str('jenisKunjungan') || 'personal',
@@ -321,9 +289,9 @@ if (!token) {
     try {
       const API_BASE = import.meta.env.PUBLIC_API_BASE_URL ?? '';
       const res = await fetch(`${API_BASE}/api/guest`, {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ token, ...data }),
+        body: JSON.stringify({ token, ...data }),
       });
 
       if (res.ok) {
