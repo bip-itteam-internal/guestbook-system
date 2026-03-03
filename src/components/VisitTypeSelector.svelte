@@ -1,8 +1,8 @@
 <script lang="ts">
-  export let selectedType: "personal" | "rombongan" = "personal";
+  export let selectedType: "personal" | "group" = "personal";
 
   function handleInput(event: Event) {
-    selectedType = (event.target as HTMLInputElement).value as "personal" | "rombongan";
+    selectedType = (event.target as HTMLInputElement).value as "personal" | "group";
   }
 </script>
 
@@ -14,7 +14,7 @@
     >
       <input
         type="radio"
-        name="jenisKunjungan"
+        name="category"
         value="personal"
         class="accent-primary"
         checked={selectedType === "personal"}
@@ -32,10 +32,10 @@
     >
       <input
         type="radio"
-        name="jenisKunjungan"
-        value="rombongan"
+        name="category"
+        value="group"
         class="accent-primary"
-        checked={selectedType === "rombongan"}
+        checked={selectedType === "group"}
         on:change={handleInput}
       />
       <div>
@@ -46,7 +46,7 @@
   </div>
 
   <!-- Info rombongan — muncul otomatis dari reactivity Svelte -->
-  {#if selectedType === "rombongan"}
+  {#if selectedType === "group"}
     <div
       class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-2 text-xs text-amber-700 flex items-center gap-2"
     >

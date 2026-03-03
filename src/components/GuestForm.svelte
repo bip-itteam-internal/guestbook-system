@@ -4,16 +4,18 @@
   import VisitTypeSelector from "./VisitTypeSelector.svelte";
 
   export let token: string;
+  export let standby_security: string | undefined = undefined;
+  export let visiting_office: string | undefined = undefined;
 
   // Data State
-  let jenisKunjungan: "personal" | "rombongan" = "personal";
-  let jumlahOrang = "";
-  let namaLengkap = "";
-  let nomorHP = "";
-  let instansi = "";
-  let platNomor = "";
-  let keperluan = "";
-  let bertemuDengan = "";
+  let category: "personal" | "group" = "personal";
+  let number_of_people = "";
+  let full_name = "";
+  let phone_number = "";
+  let visit_from = "";
+  let plate_number = "";
+  let visit_purpose = "";
+  let meeting_with = "";
 
   // Error State Map
   let errors: Record<string, string> = {};
@@ -37,35 +39,35 @@
     errors = {};
     let valid = true;
 
-    if (namaLengkap.trim().length < 3) {
-      errors.namaLengkap = "Nama lengkap minimal 3 karakter.";
+    if (full_name.trim().length < 3) {
+      errors.full_name = "Nama lengkap minimal 3 karakter.";
       valid = false;
     }
-    if (!/^[0-9]{10,15}$/.test(nomorHP.trim())) {
-      errors.nomorHP = "Nomor HP harus angka, 10–15 digit.";
+    if (!/^[0-9]{10,15}$/.test(phone_number.trim())) {
+      errors.phone_number = "Nomor HP harus angka, 10–15 digit.";
       valid = false;
     }
-    if (!instansi.trim()) {
-      errors.instansi = "Instansi / perusahaan / alamat wajib diisi.";
+    if (!visit_from.trim()) {
+      errors.visit_from = "Instansi / perusahaan / alamat wajib diisi.";
       valid = false;
     }
-    if (!platNomor.trim()) {
-      errors.platNomor = "Plat nomor kendaraan wajib diisi.";
+    if (!plate_number.trim()) {
+      errors.plate_number = "Plat nomor kendaraan wajib diisi.";
       valid = false;
     }
-    if (!keperluan.trim()) {
-      errors.keperluan = "Keperluan wajib diisi.";
+    if (!visit_purpose.trim()) {
+      errors.visit_purpose = "Keperluan wajib diisi.";
       valid = false;
     }
-    if (!bertemuDengan.trim()) {
-      errors.bertemuDengan = "Nama yang akan ditemui wajib diisi.";
+    if (!meeting_with.trim()) {
+      errors.meeting_with = "Nama yang akan ditemui wajib diisi.";
       valid = false;
     }
 
-    if (jenisKunjungan === "rombongan") {
-      const parsedNumber = parseInt(jumlahOrang, 10);
-      if (!jumlahOrang || isNaN(parsedNumber) || parsedNumber < 2) {
-        errors.jumlahOrang = "Jumlah orang harus diisi valid (minimal 2).";
+    if (category === "group") {
+      const parsedNumber = parseInt(number_of_people, 10);
+      if (!number_of_people || isNaN(parsedNumber) || parsedNumber < 2) {
+        errors.number_of_people = "Jumlah orang harus diisi valid (minimal 2).";
         valid = false;
       }
     }
@@ -80,15 +82,17 @@
     isSubmitting = true;
 
     const payload = {
-      // token,
-      category: jenisKunjungan === "rombongan" ? "group" : "personal",
-      full_name: namaLengkap.trim(),
-      phone_number: nomorHP.trim(),
-      plate_number: platNomor.trim().toUpperCase(),
-      visit_from: instansi.trim(),
-      visit_purpose: keperluan.trim(),
-      meeting_with: bertemuDengan.trim(),
-      number_of_people: jenisKunjungan === "rombongan" ? parseInt(jumlahOrang, 10) : 1,
+      token,
+      category,
+      full_name: full_name.trim(),
+      phone_number: phone_number.trim(),
+      plate_number: plate_number.trim().toUpperCase(),
+      visit_from: visit_from.trim(),
+      visit_purpose: visit_purpose.trim(),
+      meeting_with: meeting_with.trim() || undefined,
+      number_of_people: category === "group" ? parseInt(number_of_people, 10) : undefined,
+      standby_security,
+      visiting_office,
     };
 
     try {
@@ -115,18 +119,17 @@
 <form class="flex flex-col gap-6 p-6" novalidate on:submit|preventDefault={handleSubmit}>
   <!-- Section 1: Jenis Kunjungan -->
   <FormSection title="Jenis Kunjungan">
-    <VisitTypeSelector bind:selectedType={jenisKunjungan} />
-    
-    {#if jenisKunjungan === "rombongan"}
+    <VisitTypeSelector bind:selectedType={category} />
+    {#if category === "group"}
       <div class="animate-splash-up">
         <FormField
-          id="jumlahOrang"
+          id="number_of_people"
           label="Total Jumlah Orang"
           type="number"
           placeholder="Contoh: 5"
           required
-          bind:value={jumlahOrang}
-          error={errors.jumlahOrang}
+          bind:value={number_of_people}
+          error={errors.number_of_people}
         />
       </div>
     {/if}
@@ -135,63 +138,63 @@
   <!-- Section 2: Data Pengunjung -->
   <FormSection title="Data Pengunjung">
     <FormField
-      id="namaLengkap"
+      id="full_name"
       label="Nama Lengkap"
       placeholder="Contoh: Budi Santoso"
       required
-      bind:value={namaLengkap}
-      error={errors.namaLengkap}
+      bind:value={full_name}
+      error={errors.full_name}
     />
 
     <FormField
-      id="nomorHP"
+      id="phone_number"
       label="Nomor HP"
       type="tel"
       placeholder="Contoh: 08123456789"
       required
-      bind:value={nomorHP}
-      error={errors.nomorHP}
+      bind:value={phone_number}
+      error={errors.phone_number}
     />
 
     <FormField
-      id="instansi"
+      id="visit_from"
       label="Instansi / Perusahaan / Alamat"
       placeholder="Contoh: PT Maju Bersama / Jl. Melati No. 1"
       required
-      bind:value={instansi}
-      error={errors.instansi}
+      bind:value={visit_from}
+      error={errors.visit_from}
     />
 
     <FormField
-      id="platNomor"
+      id="plate_number"
       label="Plat Nomor Kendaraan"
       placeholder="Contoh: B 1234 ABC"
       required
       uppercase
       helperText='Isi dengan "-" jika tidak membawa kendaraan'
-      bind:value={platNomor}
-      error={errors.platNomor}
+      bind:value={plate_number}
+      error={errors.plate_number}
     />
   </FormSection>
 
   <!-- Section 3: Detail Kunjungan -->
   <FormSection title="Detail Kunjungan">
     <FormField
-      id="keperluan"
+      id="visit_purpose"
       label="Keperluan"
       placeholder="Contoh: Rapat, Presentasi, dll."
       required
-      bind:value={keperluan}
-      error={errors.keperluan}
+      bind:value={visit_purpose}
+      error={errors.visit_purpose}
     />
 
     <FormField
-      id="bertemuDengan"
+      id="meeting_with"
       label="Bertemu Dengan"
       placeholder="Contoh: Bapak Andi (Marketing)"
       required
-      bind:value={bertemuDengan}
-      error={errors.bertemuDengan}
+      bind:value={meeting_with}
+      error={errors.meeting_with}
     />
   </FormSection>
 

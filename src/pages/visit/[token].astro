@@ -17,6 +17,9 @@ import { SITE } from '../../config/site';
 
 const { token } = Astro.params;
 
+const standby_security = Astro.url.searchParams.get('standby_security') || undefined;
+const visiting_office = Astro.url.searchParams.get('visiting_office') || undefined;
+
 // Redirect jika token tidak ada di URL
 if (!token) {
   return Astro.redirect('/invalid?reason=invalid');
@@ -41,7 +44,7 @@ if (!token) {
     <main class='w-full max-w-[480px] mx-auto'>
       <div class='bg-white rounded-2xl border border-slate-200 overflow-hidden'>
         <PageHeader title={SITE.appName} />
-        <GuestForm client:load {token} />
+        <GuestForm client:load {token} {standby_security} {visiting_office} />
       </div>
       <p class='text-xs text-center text-slate-400 mt-5'>
         Data Anda tersimpan dengan aman dan hanya digunakan untuk keperluan kunjungan.
