@@ -2,10 +2,14 @@
   import FormSection from "./FormSection.svelte";
   import FormField from "./FormField.svelte";
   import VisitTypeSelector from "./VisitTypeSelector.svelte";
+  import LocationInfo from "./LocationInfo.svelte";
 
   export let token: string;
   export let standby_security: string | undefined = undefined;
   export let visiting_office: string | undefined = undefined;
+
+  $: formattedSecurity = standby_security?.replace(/-/g, " ");
+  $: formattedOffice = visiting_office?.replace(/-/g, " ");
 
   // Data State
   let category: "personal" | "group" = "personal";
@@ -91,8 +95,8 @@
       visit_purpose: visit_purpose.trim(),
       meeting_with: meeting_with.trim() || undefined,
       number_of_people: category === "group" ? parseInt(number_of_people, 10) : undefined,
-      standby_security,
-      visiting_office,
+      standby_security: standby_security?.replace(/-/g, " "),
+      visiting_office: visiting_office?.replace(/-/g, " "),
     };
 
     try {
@@ -117,6 +121,8 @@
 </script>
 
 <form class="flex flex-col gap-6 p-6" novalidate on:submit|preventDefault={handleSubmit}>
+  <LocationInfo {formattedSecurity} {formattedOffice} />
+
   <!-- Section 1: Jenis Kunjungan -->
   <FormSection title="Jenis Kunjungan">
     <VisitTypeSelector bind:selectedType={category} />
