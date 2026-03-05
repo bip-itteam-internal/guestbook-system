@@ -11,9 +11,7 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<!-- Background Image Container -->
 <div class='relative overflow-hidden'>
-  <!-- Image Background with Dark Overlay -->
   <div class='absolute inset-0 z-0'>
     <Image
       src={headerBg}
@@ -24,15 +22,12 @@ const { title } = Astro.props;
     <div class='absolute inset-0 bg-slate-900/40 backdrop-blur-[1px]'></div>
   </div>
 
-  <!-- Content Header -->
   <div class='relative z-10 px-6 py-5'>
     <div class='flex items-center gap-4 justify-center'>
-      <!-- Logo Container with White Circle Background for legibility -->
       <div class='shrink-0'>
         <LogoBox size='w-12 h-12' />
       </div>
 
-      <!-- Title & Company Container -->
       <div class='flex flex-col'>
         <h3 class='text-[18px] font-bold text-white tracking-tight leading-tight drop-shadow-md'>
           {title}
@@ -45,7 +40,6 @@ const { title } = Astro.props;
       </div>
     </div>
 
-    <!-- Bottom Accent Bar -->
     <div class='absolute bottom-0 left-0 right-0 h-[1.5px] bg-white/10'></div>
   </div>
 </div>
