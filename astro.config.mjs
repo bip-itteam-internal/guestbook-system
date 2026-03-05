@@ -16,5 +16,9 @@ export default defineConfig({
 
   integrations: [svelte()],
 
+  image: {
+    service: { entrypoint: 'astro/assets/services/sharp' },
+  },
+
   adapter: vercel(),
 });
