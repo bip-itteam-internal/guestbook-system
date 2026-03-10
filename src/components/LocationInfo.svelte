@@ -1,7 +1,13 @@
 <script lang="ts">
-  export let formattedSecurity: string | undefined = undefined;
-  export let formattedOffice: string | undefined = undefined;
+  import { formatSlug } from "../utils/formatter";
+
+  export let standby_security: string | undefined = undefined;
+  export let visiting_office: string | undefined = undefined;
+
+  $: formattedSecurity = formatSlug(standby_security);
+  $: formattedOffice = formatSlug(visiting_office);
 </script>
+
 
 {#if formattedSecurity || formattedOffice}
   <div class="bg-blue-50/50 border border-blue-100 p-4 rounded-xl text-sm">

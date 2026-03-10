@@ -15,6 +15,8 @@ import PageHeader from '../../components/PageHeader.astro';
 import GuestForm from '../../components/GuestForm.svelte';
 import { SITE } from '../../config/site';
 
+import { guestbookApi } from '../../api';
+
 const { token } = Astro.params;
 
 const standby_security = Astro.url.searchParams.get('standby_security') || undefined;
@@ -25,36 +27,15 @@ if (!token) {
   return Astro.redirect('/invalid?reason=invalid');
 }
 
-// Validasi token ke backend
-const API_BASE = import.meta.env.PUBLIC_API_BASE_URL;
-const validationUrl = `${API_BASE}/public/guestbook?validate=token`;
-
 try {
-  // Kirim token ke server untuk validasi
-  const res = await fetch(validationUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ token }),
-  });
+  const data = await guestbookApi.validateToken(token);
 
-  if (res.ok) {
-    const data = await res.json();
-
-    // Cek properti 'valid' dari respon backend
-    if (!data.valid) {
-      console.error(`Token invalid! URL: ${token}, Response:`, data);
-      return Astro.redirect(`/invalid?reason=invalid`);
-    }
-  } else {
-    // Jika server kirim error (misal 500 atau 404)
-    console.error(`Server error during token validation. Status: ${res.status}`);
+  if (!data.valid) {
+    console.error(`Token invalid! URL: ${token}, Response:`, data);
     return Astro.redirect(`/invalid?reason=invalid`);
   }
 } catch (error) {
-  console.error(`Network error validating token ${token} at ${validationUrl}:`, error);
-  // Di sini kita redirect jika gagal koneksi agar security terjamin
+  console.error(`Error validating token ${token}:`, error);
   return Astro.redirect('/invalid?reason=invalid');
 }
 ---

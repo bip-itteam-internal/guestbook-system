@@ -4,12 +4,15 @@
   import VisitTypeSelector from "./VisitTypeSelector.svelte";
   import LocationInfo from "./LocationInfo.svelte";
 
+  import { guestbookApi } from "../api";
+  import { notifications } from "../stores/notifications";
+  import { formatSlug } from "../utils/formatter";
+
   export let token: string;
   export let standby_security: string | undefined = undefined;
   export let visiting_office: string | undefined = undefined;
 
-  $: formattedSecurity = standby_security?.replace(/-/g, " ");
-  $: formattedOffice = visiting_office?.replace(/-/g, " ");
+
 
   // Data State
   let category: "personal" | "group" = "personal";
@@ -24,20 +27,8 @@
   // Error State Map
   let errors: Record<string, string> = {};
 
-  // Form Submission & Notification State
+  // Form Submission State
   let isSubmitting = false;
-  let showToast = false;
-  let toastMessage = "";
-  let toastType: "success" | "error" = "error";
-
-  function showNotification(msg: string, type: "success" | "error" = "error") {
-    toastMessage = msg;
-    toastType = type;
-    showToast = true;
-    setTimeout(() => {
-      showToast = false;
-    }, 4000);
-  }
 
   function validate() {
     errors = {};
@@ -85,35 +76,24 @@
 
     isSubmitting = true;
 
-    const payload = {
-      token,
-      category,
-      full_name: full_name.trim(),
-      phone_number: phone_number.trim(),
-      plate_number: plate_number.trim().toUpperCase(),
-      visit_from: visit_from.trim(),
-      visit_purpose: visit_purpose.trim(),
-      meeting_with: meeting_with.trim() || undefined,
-      number_of_people: category === "group" ? parseInt(number_of_people, 10) : undefined,
-      standby_security: standby_security?.replace(/-/g, " "),
-      visiting_office: visiting_office?.replace(/-/g, " "),
-    };
-
     try {
-      const API_BASE = import.meta.env.PUBLIC_API_BASE_URL;
-      const res = await fetch(`${API_BASE}/guestbook`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+      await guestbookApi.submitGuest({
+        token,
+        category,
+        full_name: full_name.trim(),
+        phone_number: phone_number.trim(),
+        plate_number: plate_number.trim().toUpperCase(),
+        visit_from: visit_from.trim(),
+        visit_purpose: visit_purpose.trim(),
+        meeting_with: meeting_with.trim() || undefined,
+        number_of_people: category === "group" ? parseInt(number_of_people, 10) : undefined,
+        standby_security: formatSlug(standby_security),
+        visiting_office: formatSlug(visiting_office),
       });
-
-      if (res.ok) {
-        window.location.href = "/success";
-      } else {
-        showNotification("Gagal mengirim data. Silakan coba lagi.");
-      }
+      
+      window.location.href = "/success";
     } catch {
-      showNotification("Terjadi kesalahan koneksi. Periksa internet Anda.");
+      notifications.error("Gagal mengirim data. Silakan coba lagi.");
     } finally {
       isSubmitting = false;
     }
@@ -121,7 +101,7 @@
 </script>
 
 <form class="flex flex-col gap-6 p-6" novalidate on:submit|preventDefault={handleSubmit}>
-  <LocationInfo {formattedSecurity} {formattedOffice} />
+  <LocationInfo {standby_security} {visiting_office} />
 
   <!-- Section 1: Jenis Kunjungan -->
   <FormSection title="Jenis Kunjungan">
@@ -140,6 +120,7 @@
       </div>
     {/if}
   </FormSection>
+
 
   <!-- Section 2: Data Pengunjung -->
   <FormSection title="Data Pengunjung">
@@ -214,27 +195,4 @@
   </button>
 </form>
 
-<!-- Toast Notification -->
-{#if showToast}
-  <div
-    role="alert"
-    aria-live="assertive"
-    class="fixed bottom-6 left-4 right-4 max-w-[480px] mx-auto rounded-xl px-4 py-3 shadow-lg z-50 flex items-center gap-3 text-sm font-medium text-white transition-opacity {toastType === 'error' ? 'bg-red-600' : 'bg-green-600'}"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="w-5 h-5 flex-shrink-0"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"
-      ></path>
-    </svg>
-    <span>{toastMessage}</span>
-  </div>
-{/if}
+
