@@ -2,6 +2,8 @@
 import '../styles/global.css';
 import { SITE } from '../config/site';
 
+import ToastContainer from '../components/ToastContainer.svelte';
+
 interface Props {
   title: string;
   description?: string;
@@ -33,5 +35,6 @@ const {
   </head>
   <body class={bodyClass}>
     <slot />
+    <ToastContainer client:load />
   </body>
 </html>
