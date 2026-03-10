@@ -5,7 +5,7 @@
  *
  * Alur:
  * 1. Token diambil dari URL params
- * 2. (TODO) Validasi token ke backend — aktifkan saat backend siap
+ * 2. Validasi token ke backend API
  * 3. Splash screen tampil 2 detik, lalu form muncul
  * 4. User mengisi form dan submit ke POST /api/guest
  */
@@ -22,6 +22,39 @@ const visiting_office = Astro.url.searchParams.get('visiting_office') || undefin
 
 // Redirect jika token tidak ada di URL
 if (!token) {
+  return Astro.redirect('/invalid?reason=invalid');
+}
+
+// Validasi token ke backend
+const API_BASE = import.meta.env.PUBLIC_API_BASE_URL;
+const validationUrl = `${API_BASE}/public/guestbook?validate=token`;
+
+try {
+  // Kirim token ke server untuk validasi
+  const res = await fetch(validationUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ token }),
+  });
+
+  if (res.ok) {
+    const data = await res.json();
+
+    // Cek properti 'valid' dari respon backend
+    if (!data.valid) {
+      console.error(`Token invalid! URL: ${token}, Response:`, data);
+      return Astro.redirect(`/invalid?reason=invalid`);
+    }
+  } else {
+    // Jika server kirim error (misal 500 atau 404)
+    console.error(`Server error during token validation. Status: ${res.status}`);
+    return Astro.redirect(`/invalid?reason=invalid`);
+  }
+} catch (error) {
+  console.error(`Network error validating token ${token} at ${validationUrl}:`, error);
+  // Di sini kita redirect jika gagal koneksi agar security terjamin
   return Astro.redirect('/invalid?reason=invalid');
 }
 ---
