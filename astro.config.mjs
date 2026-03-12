@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 import svelte from '@astrojs/svelte';
 
-import vercel from '@astrojs/vercel';
+import node from '@astrojs/node';
 
 // https://astro.build/config
 export default defineConfig({
@@ -24,7 +24,7 @@ export default defineConfig({
 
   integrations: [svelte()],
 
-  adapter: vercel({
-    imageService: true,
+  adapter: node({
+    mode: 'standalone',
   }),
 });
