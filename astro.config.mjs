@@ -14,11 +14,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
     server: {
       allowedHosts: ['tamu.bharatainternasional.com'],
-      hmr: {
-        host: 'tamu.bharatainternasional.com',
-        protocol: 'wss',
-        clientPort: 443,
-      },
+      hmr: false,
     },
   },
 
