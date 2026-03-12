@@ -1,0 +1,48 @@
+import { c as createComponent, r as renderComponent, b as renderTemplate, a as createAstro, m as maybeRenderHead } from '../chunks/astro/server_Q3tZ6B8y.mjs';
+import 'piccolore';
+import { S as SITE, $ as $$BaseLayout } from '../chunks/BaseLayout_DeDit4aO.mjs';
+export { r as renderers } from '../chunks/_@astro-renderers_C6qh-7QO.mjs';
+
+const $$Astro = createAstro();
+const $$Invalid = createComponent(($$result, $$props, $$slots) => {
+  const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
+  Astro2.self = $$Invalid;
+  const reason = Astro2.url.searchParams.get("reason") ?? "invalid";
+  const messages = {
+    invalid: {
+      title: "Token Tidak Valid",
+      desc: "Link yang Anda gunakan tidak valid. Pastikan Anda scan QR Code yang benar."
+    },
+    expired: {
+      title: "Sesi Telah Berakhir",
+      desc: "Link kunjungan ini sudah kadaluarsa. Silakan minta QR Code baru kepada petugas."
+    },
+    used: {
+      title: "Link Sudah Digunakan",
+      desc: "Data kunjungan dengan link ini sudah pernah dikirim sebelumnya."
+    },
+    notfound: {
+      title: "Halaman Tidak Ditemukan",
+      desc: "Halaman yang Anda cari tidak tersedia. Pastikan link sudah benar, atau kembali ke halaman utama."
+    }
+  };
+  const msg = messages[reason] ?? messages["invalid"];
+  return renderTemplate`${renderComponent($$result, "BaseLayout", $$BaseLayout, { "title": `${SITE.appName} \u2013 ${msg.title}`, "description": "Terjadi masalah dengan link kunjungan Anda.", "bodyClass": "min-h-screen bg-gray-50 flex items-center justify-center px-4" }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<main class="w-full max-w-[480px] text-center"> <!-- Icon Error --> <div class="mb-6 flex justify-center"> <div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center"> <svg class="w-10 h-10 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path> </svg> </div> </div> <!-- Pesan Error --> <h1 class="text-2xl font-bold text-slate-800 mb-2">${msg.title}</h1> <p class="text-gray-500 text-sm leading-relaxed mb-8">${msg.desc}</p> <!-- Tombol kembali --> <a href="/" class="inline-block w-full h-12 leading-[3rem] bg-primary text-white font-semibold rounded-xl transition hover:bg-primary-dark active:scale-95 text-center">
+Kembali ke Halaman Utama
+</a> <p class="text-[10px] text-center text-slate-400 mt-12 uppercase tracking-widest font-medium">
+&copy; ${(/* @__PURE__ */ new Date()).getFullYear()} ${SITE.copyright} </p> </main> ` })}`;
+}, "C:/Data utama/Aplikasi/Office/guestbook-system/src/pages/invalid.astro", void 0);
+
+const $$file = "C:/Data utama/Aplikasi/Office/guestbook-system/src/pages/invalid.astro";
+const $$url = "/invalid";
+
+const _page = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
+  __proto__: null,
+  default: $$Invalid,
+  file: $$file,
+  url: $$url
+}, Symbol.toStringTag, { value: 'Module' }));
+
+const page = () => _page;
+
+export { page };

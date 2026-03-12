@@ -1,0 +1,74 @@
+---
+/**
+ * Halaman formulir buku tamu.
+ * Diakses user setelah scan QR Code dengan URL: /visit/<token>
+ *
+ * Alur:
+ * 1. Token diambil dari URL params
+ * 2. Validasi token ke backend API
+ * 3. Splash screen tampil 2 detik, lalu form muncul
+ * 4. User mengisi form dan submit ke POST /api/guest
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SplashScreen from '../../components/SplashScreen.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import GuestForm from '../../components/GuestForm.svelte';
+import { SITE } from '../../config/site';
+
+import { guestbookApi } from '../../api';
+
+const { token } = Astro.params;
+
+const standby_security = Astro.url.searchParams.get('standby_security') || undefined;
+const visiting_office = Astro.url.searchParams.get('visiting_office') || undefined;
+
+// Redirect jika token tidak ada di URL
+if (!token) {
+  return Astro.redirect('/invalid?reason=invalid');
+}
+
+try {
+  const data = await guestbookApi.validateToken(token);
+
+  if (!data.valid) {
+    console.error(`Token invalid! URL: ${token}, Response:`, data);
+    return Astro.redirect(`/invalid?reason=invalid`);
+  }
+} catch (error) {
+  console.error(`Error validating token ${token}:`, error);
+  return Astro.redirect('/invalid?reason=invalid');
+}
+---
+
+<BaseLayout
+  title={SITE.appName}
+  description={`Formulir buku tamu digital ${SITE.company}. Isi data kunjungan Anda.`}
+  bodyClass='min-h-screen bg-[#f8fafc]'
+>
+  <meta
+    slot='head'
+    id='app-config'
+    data-tz={SITE.timezone}
+    data-tz-label={SITE.timezoneLabel}
+    data-locale={SITE.locale}
+  />
+  <SplashScreen revealId='main-content' />
+
+  <div id='main-content' class='opacity-0 transition-opacity duration-400 ease-out pt-6 px-4 pb-24'>
+    <main class='w-full max-w-[480px] mx-auto'>
+      <div class='bg-white rounded-2xl border border-slate-200 overflow-hidden'>
+        <PageHeader title={SITE.appName} />
+        <GuestForm client:load {token} {standby_security} {visiting_office} />
+      </div>
+      <p class='text-xs text-center text-slate-400 mt-5'>
+        Data Anda tersimpan dengan aman dan hanya digunakan untuk keperluan kunjungan.
+      </p>
+    </main>
+    <p
+      class='text-[10px] text-center text-slate-400 mt-8 mb-4 uppercase tracking-widest font-medium'
+    >
+      &copy; {new Date().getFullYear()}
+      {SITE.copyright}
+    </p>
+  </div>
+</BaseLayout>
